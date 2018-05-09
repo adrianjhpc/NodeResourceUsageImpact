@@ -58,13 +58,14 @@ int MPI_Init(int *argc, char ***argv){
     posix_spawn_file_actions_addopen(&action, STDERR_FILENO, stderrname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     
     sprintf(arg1, "%s", "inject");
-    sprintf(arg2, "%d", global_rank*40+1);
+    sprintf(arg2, "%d", global_rank);
     sprintf(arg3, "%s", "bob.txt");
 
     args[0] = arg1;
     args[1] = arg2; 
     args[2] = arg3;
     args[3] = NULL;
+
 
     ierr = posix_spawn(&process_id, "/work/z01/z01/adrianj/inject", &action, NULL, args, environ);
 
@@ -80,7 +81,7 @@ int MPI_Init(int *argc, char ***argv){
     cont = 1;
     i = 0;
     while(cont && i < 10){
-       sprintf(filename, "%d_pid_number.txt", global_rank*40+1);
+       sprintf(filename, "%d_pid_number.txt", global_rank);
       
        file_handle = fopen(filename, "r");
        if(file_handle != NULL){

@@ -1,0 +1,22 @@
+SRCMPI	= mpi_intercept_library.c hello.c
+
+OBJMPI	=$(SRCMPI:.c=.o)
+
+CC	= cc
+PP	= -g 
+
+CFLAGS	= -O3 $(PP) 
+LIBS	= 
+
+PRGMPI	= hello
+
+main:	$(PRGMPI) 
+
+.c.o:	Makefile
+	$(CC) -c $(CFLAGS) $(ELIBS) $<
+
+$(PRGMPI):$(OBJMPI) Makefile.mpi definitions.h
+	$(CC) $(LDFLAGS) -o $@ $(OBJMPI) $(LIBS)
+
+clean:
+	rm -fr $(TMP) $(OBJMPI) $(PRGMPI) core

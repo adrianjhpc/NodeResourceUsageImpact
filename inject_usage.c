@@ -16,6 +16,7 @@ int main(int argc, char **argv){
   pthread_t thread_ids[MAX_THREADS];
   int current_thread_max = 0;
   int i, ierr;
+  int rank;
   mycpu_t *cpu_args;
 
   printf("Inject process %ld started\n",getpid());
@@ -26,8 +27,7 @@ int main(int argc, char **argv){
     fflush(stdout);
     return 1;
   }
-  printf("%d %s %s %s\n",getpid(),argv[0],argv[1],argv[2]);
-  fflush(stdout);
+  
   cpu_args = (mycpu_t *) malloc(sizeof(mycpu_t));
   sprintf(filename,"%d_pid_number.txt",atoi(argv[1]));
   printf("Looking to open file to pass pid %s\n",filename);
@@ -77,7 +77,7 @@ int main(int argc, char **argv){
   for(i=0; i<current_thread_max; i++){
     pthread_join(thread_ids[i], NULL);
   }
-  
+
   return 0;
 
 }

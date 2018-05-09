@@ -15,6 +15,8 @@ void *exercise_network(void *arguments){
 
    struct net_arguments *net_args = arguments;
 
+   change_core_assignment(0,net_args->core);
+
    if(getifaddrs(&ifaddr) == -1) {
     printf("Error looking up network interfaces\n");
     return;

@@ -39,7 +39,14 @@ typedef struct net_arguments {
 void *exercise_cpu_int(void *);
 void *exercise_cpu_fp(void *);
 
+void *exercise_memory_int(void *);
+void *exercise_memory_fp(void *);
+
+void *exercise_network(void *);
+
+void *exercise_io_single_writes(void *);
+void *exercise_io_individual_writes(void *);
+
 void print_core_assignment();
 void change_core_assignment(pid_t,int);
 static char *cpuset_to_cstr(cpu_set_t *, char *);
-;

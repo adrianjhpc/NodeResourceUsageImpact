@@ -6,7 +6,7 @@ void *exercise_cpu_int(void *arguments){
    struct cpu_arguments *cpu_args = arguments;
 
    change_core_assignment(0,cpu_args->core);
-   printf("exercise_cpu_int running on core %d",sched_getcpu());
+   printf("exercise_cpu_int running on core %d\n",sched_getcpu());
    fflush(stdout);
    while(*(cpu_args->flag)){
      for(i=0;i<cpu_args->size;i++){
@@ -24,7 +24,7 @@ void *exercise_cpu_fp(void *arguments){
    struct cpu_arguments *cpu_args = arguments;
 
    change_core_assignment(0,cpu_args->core);
-   printf("exercise_cpu_fp running on core %d",sched_getcpu());
+   printf("exercise_cpu_fp running on core %d\n",sched_getcpu());
    fflush(stdout);
    while(*(cpu_args->flag)){
      for(i=0;i<cpu_args->size;i++){
@@ -33,5 +33,7 @@ void *exercise_cpu_fp(void *arguments){
      usleep(cpu_args->freq);
    }
    free(arguments);
+   printf("finished exercise_cpu_fp\n");
+   fflush(stdout);
 }
 

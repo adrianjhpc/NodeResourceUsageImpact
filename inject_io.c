@@ -9,8 +9,9 @@ void *exercise_io_single_write(void *arguments){
 
    struct io_arguments *io_args = arguments;
 
-   data = (double *)malloc(sizeof(double)*io_args->size);
+   change_core_assignment(0,io_args->core);
 
+   data = (double *)malloc(sizeof(double)*io_args->size);
 
    while(*(io_args->flag)){
      if((file_handle = fopen(io_args->path,"rw+")) != NULL){
@@ -37,6 +38,8 @@ void *exercise_io_individual_writes(void *arguments){
    FILE * file_handle;
 
    struct io_arguments *io_args = arguments;
+
+   change_core_assignment(0,io_args->core);
 
    data = (double *)malloc(sizeof(double)*io_args->size);
 

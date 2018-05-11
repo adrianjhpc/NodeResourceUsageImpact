@@ -14,7 +14,7 @@ PRGINJ  = inject
 main:	$(PRGINJ)
 
 .c.o:	Makefile
-	$(CC) -c $(CFLAGS) $(ELIBS) $<
+	$(CC) -c $(CFLAGS) $(LIBS) $<
 
 $(PRGINJ):$(OBJINJ) Makefile.inject inject_definitions.h
 	$(CC) $(LDFLAGS) -o $@ $(OBJINJ) $(LIBS)

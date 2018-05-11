@@ -64,8 +64,8 @@ int main(int argc, char **argv){
   change_core_assignment(getpid(),placement);
   print_core_assignment();
 
-  if(rank%processes_per_node == 0){
- 
+ // if(rank%processes_per_node == 0){
+  if(rank > -1){
 // This is freed by the calling thread, not by this process.
   cpu_args = (mycpu_t *) malloc(sizeof(mycpu_t)); 
   cpu_args->size = 100000000;

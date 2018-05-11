@@ -19,6 +19,7 @@ void *exercise_network(void *arguments){
 
    if(getifaddrs(&ifaddr) == -1) {
     printf("Error looking up network interfaces\n");
+    fflush(stdout);
     return;
   }
 
@@ -29,7 +30,6 @@ void *exercise_network(void *arguments){
     sa = (struct sockaddr_in *) ifa->ifa_addr;
     addr = inet_ntoa(sa->sin_addr);
     printf("interface %s %s\n", ifa->ifa_name, addr);
-   
   }
 
   freeifaddrs(ifaddr);

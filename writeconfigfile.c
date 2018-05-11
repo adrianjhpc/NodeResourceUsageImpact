@@ -1,6 +1,4 @@
-#include <mxml.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "inject_definitions.h"
 
 int main(int argc, char **argv){
 
@@ -32,15 +30,23 @@ int main(int argc, char **argv){
    node = mxmlNewElement(placement, "inject_process_per_socket");
    mxmlNewInteger(node, 1);
    node = mxmlNewElement(placement, "use_hyperthreads");
-   mxmlNewText(node, "Yes");
+   mxmlNewText(node, 0, YES);
 
 
    injecttask = mxmlNewElement(experiment, "inject_task");
-   node = mxmlNewElement(experiment, "type");
-   mxmlNewText(node, "cpu_fpu");
-   node = mxmlNewElement(experiment, "size");
+   node = mxmlNewElement(injecttask, "type");
+   mxmlNewText(node, 0, CPU_FP);
+   node = mxmlNewElement(injecttask, "size");
    mxmlNewInteger(node, 1000000);
-   node = mxmlNewElement(experiment, "freq");
+   node = mxmlNewElement(injecttask, "freq");
+   mxmlNewInteger(node, 1000000);
+
+   injecttask = mxmlNewElement(experiment, "inject_task");
+   node = mxmlNewElement(injecttask, "type");
+   mxmlNewText(node, 0, MEM_FP);
+   node = mxmlNewElement(injecttask, "size");
+   mxmlNewInteger(node, 1000000);
+   node = mxmlNewElement(injecttask, "freq");
    mxmlNewInteger(node, 1000000);
 
 

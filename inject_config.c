@@ -3,7 +3,7 @@
 mxml_type_t type_cb(mxml_node_t *);
 int get_int_data(mxml_node_t *, char *);
 
-int main(int argc, char **argv){
+int read_configuration(char *filename, int *number_of_task, ){
 
    FILE *fp;
    mxml_node_t *tree;
@@ -27,12 +27,7 @@ int main(int argc, char **argv){
    const char *task_path;
    const char *temp_text;
 
-   if(argc != 2){
-     printf("Error: Expecting the configuration filename to be passed on the command line. Exiting\n");
-     return(1);
-   }
-
-   fp = fopen(argv[1], "r");
+   fp = fopen(filename, "r");
    xml = mxmlLoadFile(NULL, fp, type_cb);
    fclose(fp);
 
@@ -115,7 +110,10 @@ int main(int argc, char **argv){
        if(task != NULL){
          task_size = mxmlGetInteger(task);
        }
-       task_freq = get_int_data(node, "freq");
+       task = mxmlFindElement(node, node, "freq", NULL, NULL, MXML_DESCEND);
+       if(task != NULL){
+         task_freq = mxmlGetInteger(task);
+       }
        if(experiment_type != IO_SINGLE || experiment_type != IO_INDIVIDUAL){
          printf("Experiment %s size %d freq %d\n", experiment_type, task_size, task_freq);
        }else{
@@ -140,7 +138,7 @@ int get_int_data(mxml_node_t *node, char *node_name){
   }else{
     return -1;
   }
-}
+
 
 mxml_type_t type_cb(mxml_node_t *node){
   const char *type;

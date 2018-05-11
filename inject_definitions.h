@@ -4,8 +4,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/sysinfo.h>
+#include <mxml.h>
 
 #define MAX_THREADS 100
+
+#define CPU_INT "cpu_int"
+#define CPU_FP "cpu_fp"
+#define MEM_INT "mem_int"
+#define MEM_FP "mem_fp"
+#define IO_SINGLE "io_single"
+#define IO_INDIVIDUAL "io_individual"
+#define NETWORK "network"
+#define YES "Yes"
+#define NO "No"
 
 typedef struct cpu_arguments {
   int size;

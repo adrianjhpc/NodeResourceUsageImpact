@@ -1,12 +1,12 @@
-SRCINJ  = core_management.c inject_usage.c inject_memory.c inject_cpu.c inject_io.c inject_network.c
+SRCINJ  = core_management.c inject_usage.c inject_memory.c inject_cpu.c inject_io.c inject_network.c inject_config.c
 
 OBJINJ  =$(SRCINJ:.c=.o)
 
 CC	= icc
 PP	= -g 
 
-CFLAGS	= -O3 $(PP) 
-LIBS	= -lpthread 
+CFLAGS	= -O3 -I mxml/ $(PP) 
+LIBS	= -L/home/z01/z01/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread 
 
 
 PRGINJ  = inject

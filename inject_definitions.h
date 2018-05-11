@@ -17,6 +17,8 @@
 #define NETWORK "network"
 #define YES "Yes"
 #define NO "No"
+#define ERROR_INT -1
+#define ERROR_STR "error"
 
 typedef struct cpu_arguments {
   int size;

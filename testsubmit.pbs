@@ -1,6 +1,6 @@
 #!/bin/bash --login
 #
-#PBS -l select=1
+#PBS -l select=2
 #PBS -N testinj
 #PBS -A z19-cse
 #PBS -l walltime=0:10:0
@@ -8,7 +8,7 @@
 cd /work/z01/z01/adrianj
 
 cp ~/NodeResourceUsageImpact/hello .
-cp ~/NodeResourceUsageImpact/inject .
+cp ~/NodeResourceUsageImpact/inject .inject
 
 ulimit -c unlimited
 
@@ -17,7 +17,7 @@ date
 #aprun -n 16 -N 8 ./hello 1 & 
 #aprun -n 16 -N 8 ./hello 2 
 #wait
-aprun -n 2 -N 2 -j 1 ./hello 1 
+aprun -n 48 -N 24 -j 1 ./hello 1 
 cp -f inject_log_* ~/NodeResourceUsageImpact/ 2>/dev/null 
 rm -f inject_log_*
 date

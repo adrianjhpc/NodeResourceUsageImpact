@@ -67,7 +67,7 @@ int MPI_Init(int *argc, char ***argv){
     args[3] = NULL;
 
 
-    ierr = posix_spawn(&process_id, "/work/z01/z01/adrianj/inject", &action, NULL, args, environ);
+    ierr = posix_spawn(&process_id, ".inject", &action, NULL, args, environ);
 
     posix_spawn_file_actions_destroy(&action);
 

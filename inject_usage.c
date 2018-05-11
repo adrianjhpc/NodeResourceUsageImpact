@@ -17,6 +17,7 @@ int main(int argc, char **argv){
   int current_thread_max = 0;
   int i, ierr;
   int rank;
+  int cores_per_node, processes_per_node, hyperthreads, placement;
   mycpu_t *cpu_args;
   mymem_t *mem_args;
 
@@ -28,8 +29,8 @@ int main(int argc, char **argv){
     fflush(stdout);
     return 1;
   }
-  
-  sprintf(filename,"%d_pid_number.txt",atoi(argv[1]));
+  rank = atoi(argv[1]);
+  sprintf(filename,"%d_pid_number.txt",rank);
   file_handle = fopen(filename, "w");
   if (file_handle == NULL) {
     printf("Cannot open file to exchange pid from child inject process to parent MPI process. Exiting\n");
@@ -47,6 +48,11 @@ int main(int argc, char **argv){
     return 1;
   }
 
+  cores_per_node = 24;
+  hyperthreads = 2;
+  processes_per_node = 24;
+  placement = rank - (processes_per_node*(rank/processes_per_node))+((cores_per_node*hyperthreads)-cores_per_node);
+
   // Register the signal handler to allow child threads to be notified to stop gracefully.
   if(signal(SIGINT, sig_handler) == SIG_ERR){
     printf("Cannot catch SIGINT so exiting\n");
@@ -55,15 +61,17 @@ int main(int argc, char **argv){
   }
 
   print_core_assignment();
-  change_core_assignment(getpid(),24);
+  change_core_assignment(getpid(),placement);
   print_core_assignment();
+
+  if(rank%processes_per_node == 0){
  
 // This is freed by the calling thread, not by this process.
   cpu_args = (mycpu_t *) malloc(sizeof(mycpu_t)); 
-  cpu_args->size = 1000000;
+  cpu_args->size = 100000000;
   cpu_args->freq = 1000000;
   cpu_args->flag = &run_flag;
-  cpu_args->core = 24;
+  cpu_args->core = placement;
  
   printf("Starting first thread\n");
   fflush(stdout);
@@ -76,12 +84,13 @@ int main(int argc, char **argv){
      fflush(stdout);
   }
 
+/*
 // This is freed by the calling thread, not by this process.
   mem_args = (mymem_t *) malloc(sizeof(mymem_t));
   mem_args->size = 1000000;
   mem_args->freq = 1000000;
   mem_args->flag = &run_flag;
-  mem_args->core = 12;
+  mem_args->core = rank+24;
 
   printf("Starting second thread\n");
   fflush(stdout);
@@ -94,11 +103,13 @@ int main(int argc, char **argv){
      fflush(stdout);
   }
 
-
+*/
   for(i=0; i<current_thread_max; i++){
     printf("Joining thread %d\n",i);
     fflush(stdout);
     pthread_join(thread_ids[i], NULL);
+  }
+
   }
 
   return 0;

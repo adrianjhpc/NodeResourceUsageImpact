@@ -49,6 +49,18 @@ int main(int argc, char **argv){
    node = mxmlNewElement(injecttask, "freq");
    mxmlNewInteger(node, 1000000);
 
+   injecttask = mxmlNewElement(experiment, "inject_task");
+   node = mxmlNewElement(injecttask, "type");
+   mxmlNewText(node, 0, IO_SINGLE);
+   node = mxmlNewElement(injecttask, "size");
+   mxmlNewInteger(node, 1000000);
+   node = mxmlNewElement(injecttask, "freq");
+   mxmlNewInteger(node, 1000000);
+   node = mxmlNewElement(injecttask, "path");
+   mxmlNewText(node, 0, "/tmp/bob");
+
+
+
 
    fp = fopen("configuration.xml", "w");
    mxmlSaveFile(xml, fp, MXML_NO_CALLBACK);

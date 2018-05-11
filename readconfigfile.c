@@ -2,6 +2,9 @@
 
 mxml_type_t type_cb(mxml_node_t *);
 int get_int_data(mxml_node_t *, char *);
+const char * get_text_data(mxml_node_t *, char *);
+mxml_node_t * get_my_node(mxml_node_t *, char *);
+mxml_node_t * get_my_node_with_root(mxml_node_t *, mxml_node_t *, char *);
 
 int main(int argc, char **argv){
 
@@ -36,27 +39,31 @@ int main(int argc, char **argv){
    xml = mxmlLoadFile(NULL, fp, type_cb);
    fclose(fp);
 
-   tree = mxmlFindElement(xml, xml, "configuration", NULL, NULL, MXML_DESCEND);
-   hardware = mxmlFindElement(tree, tree, "hardware", NULL, NULL, MXML_DESCEND);
-
-   cores_per_node = 1;
-   node = mxmlFindElement(hardware, hardware, "cores_per_node", NULL, NULL, MXML_DESCEND);
-   if(node != NULL){
-     cores_per_node = mxmlGetInteger(node);
+   tree = get_my_node(xml, "configuration");
+   if(tree == NULL){
+     printf("Error with configuration files, configuration node missing, exiting\n");
+     return(1);
+   }
+   hardware = get_my_node(tree, "hardware");
+   if(hardware == NULL){
+     printf("Error with configuration files, hardware node missing, exiting\n");
+     return(1);
+   }
+   cores_per_node =  get_int_data(hardware, "cores_per_node");
+    if(cores_per_node == ERROR_INT){
+     cores_per_node = 1;
    }
 
-   hyperthreads = 1;
-   node = mxmlFindElement(hardware, hardware, "hyperthreads", NULL, NULL, MXML_DESCEND); 
-   if(node != NULL){
-     hyperthreads = mxmlGetInteger(node);
+   hyperthreads = get_int_data(hardware, "hyperthreads");
+   if(hyperthreads == ERROR_INT){
+     hyperthreads = 1;
    }
 
    printf("Cores per node %d hyperthreads %d\n",cores_per_node,hyperthreads);
 
-   sockets = 1;
-   node = mxmlFindElement(hardware, hardware, "sockets", NULL, NULL, MXML_DESCEND);
-   if(node != NULL){
-     sockets = mxmlGetInteger(node);
+   sockets = get_int_data(hardware, "sockets");
+   if(sockets == ERROR_INT){
+     sockets = 1;
    }
 
    if(cores_per_node%sockets == 0){
@@ -71,24 +78,29 @@ int main(int argc, char **argv){
    printf("Sockets %d cores per socket %d\n",sockets,cores_per_socket);
 
 
-   experiment = mxmlFindElement(tree, tree, "experiment", NULL, NULL, MXML_DESCEND);
-   placement = mxmlFindElement(experiment, experiment, "placement", NULL, NULL, MXML_DESCEND);
+   experiment = get_my_node(tree, "experiment");
+   if(experiment == NULL){
+     printf("Error with configuration files, experiment node missing, exiting\n");
+     return(1);
+   }
+   placement = get_my_node(experiment, "placement");
+   if(placement == NULL){
+     printf("Error with configuration files, placement node missing, exiting\n");
+     return(1);
+   }
 
-   inject_process_per_node = 0;
-   node = mxmlFindElement(placement, placement, "inject_process_per_node", NULL, NULL, MXML_DESCEND);
-   if(node != NULL){
-     inject_process_per_node = mxmlGetInteger(node);
+   inject_process_per_node = get_int_data(placement, "inject_process_per_node");
+   if(inject_process_per_node == ERROR_INT){
+     inject_process_per_node = 0;
    }
-   inject_process_per_socket = 0;
-   node = mxmlFindElement(placement, placement, "inject_process_per_socket", NULL, NULL, MXML_DESCEND);
-   if(node != NULL){
-     inject_process_per_socket = mxmlGetInteger(node);
-   }
+   inject_process_per_socket = get_int_data(placement, "inject_process_per_socket");
+   if(inject_process_per_socket == ERROR_INT){
+     inject_process_per_socket = 0;
+   } 
    use_hyperthreads = 0;
-   node = mxmlFindElement(placement, placement, "use_hyperthreads", NULL, NULL, MXML_DESCEND);
-   if(node != NULL){
-     temp_text = mxmlGetText(node, 0);
-     if(temp_text == YES){
+   temp_text = get_text_data(placement, "use_hyperthreads");
+   if(strcmp(temp_text,ERROR_STR) != 0){
+     if(strcmp(temp_text,YES) == 0){
        use_hyperthreads = 1;
      }
    }
@@ -97,31 +109,27 @@ int main(int argc, char **argv){
 
    task_count = 0;
 
-   for(node = mxmlFindElement(experiment, experiment, "inject_task", NULL, NULL, MXML_DESCEND);
-       node != NULL;
-       node = mxmlFindElement(node, experiment, "inject_task", NULL, NULL, MXML_DESCEND)){
+   for(node = get_my_node(experiment, "inject_task"); node != NULL; node = get_my_node_with_root(node, experiment, "inject_task")){
        task_count++;
    }
 
+   if(task_count <= 0){
+     printf("Error with configuration files, no injection tasks defined, exiting\n");
+     return(1);
+   }
    printf("Tasks: %d\n", task_count);
 
-   for(node = mxmlFindElement(experiment, experiment, "inject_task", NULL, NULL, MXML_DESCEND);
-       node != NULL;
-       node = mxmlFindElement(node, experiment, "inject_task", NULL, NULL, MXML_DESCEND)){
-     task = mxmlFindElement(node, node, "type", NULL, NULL, MXML_DESCEND);
+   for(task = get_my_node(experiment, "inject_task"); task != NULL; task = get_my_node_with_root(task, experiment, "inject_task")){
      if(task != NULL){
-       experiment_type = mxmlGetText(task, 0);
-       task = mxmlFindElement(node, node, "size", NULL, NULL, MXML_DESCEND);
-       if(task != NULL){
-         task_size = mxmlGetInteger(task);
-       }
-       task_freq = get_int_data(node, "freq");
-       if(experiment_type != IO_SINGLE || experiment_type != IO_INDIVIDUAL){
+       experiment_type = get_text_data(task, "type");
+       task_size =  get_int_data(task, "size");
+       task_freq = get_int_data(task, "freq");
+       if(strcmp(experiment_type,IO_SINGLE) != 0 && strcmp(experiment_type,IO_INDIVIDUAL) != 0){
          printf("Experiment %s size %d freq %d\n", experiment_type, task_size, task_freq);
        }else{
-         task = mxmlFindElement(node, node, "path", NULL, NULL, MXML_DESCEND);
-         if(task != NULL){
-           task_path = mxmlGetText(task, 0);
+         task_path = get_text_data(task, "path"); 
+         if(strcmp(task_path,ERROR_STR) == 0){
+           printf("Problem getting path for I/O task\n");
          }
          printf("Experiment %s size %d freq %d path %s\n", experiment_type, task_size, task_freq, task_path);
        }
@@ -138,9 +146,29 @@ int get_int_data(mxml_node_t *node, char *node_name){
   if(task != NULL){
     return mxmlGetInteger(task);
   }else{
-    return -1;
+    return ERROR_INT;
   }
 }
+
+const char * get_text_data(mxml_node_t *node, char *node_name){
+  mxml_node_t *task;
+  task = mxmlFindElement(node, node, node_name, NULL, NULL, MXML_DESCEND);
+  if(task != NULL){
+    return mxmlGetText(task, 0);
+  }else{
+    return ERROR_STR;
+  }
+}
+
+
+mxml_node_t * get_my_node(mxml_node_t *node, char *node_name){
+  return mxmlFindElement(node, node, node_name, NULL, NULL, MXML_DESCEND);
+}
+
+mxml_node_t * get_my_node_with_root(mxml_node_t *parent, mxml_node_t *root,  char *node_name){
+  return mxmlFindElement(parent, root, node_name, NULL, NULL, MXML_DESCEND);
+}
+
 
 mxml_type_t type_cb(mxml_node_t *node){
   const char *type;
@@ -153,6 +181,8 @@ mxml_type_t type_cb(mxml_node_t *node){
   if(!strcmp(type, "use_hyperthreads")){
     return(MXML_TEXT);
   }else if(!strcmp(type, "type")){
+    return(MXML_TEXT);
+  }else if(!strcmp(type, "path")){
     return(MXML_TEXT);
   }else{
     return(MXML_INTEGER);

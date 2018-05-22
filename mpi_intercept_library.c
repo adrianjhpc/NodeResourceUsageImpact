@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include "definitions.h"
+#include "inject_definitions.h"
 
 int MPI_Init(int *argc, char ***argv){
   char hostname[1024];
@@ -29,14 +30,28 @@ int MPI_Init(int *argc, char ***argv){
 
   if(ierr == 0){
 
+#ifdef DEBUG
     printf("Initialising intercept MPI on %s\n",hostname);
+#endif
+
+// This is done here to stop the MPI run before the inject application is launched in the case 
+// there is an issue with the inject configuration file. If we only did this in the inject application
+// then it would exit but the MPI program would continue without the inject tasks running, which we 
+// want to avoid.
+    if(validate_input_file("configuration.xml") == ERROR_INT){
+      printf("Problem validating configure file for inject application. Exiting\n");
+      return(1);
+    }
+
 
     MPI_Comm_size(MPI_COMM_WORLD, &global_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &global_rank);
 
     node_key = get_key(procname);
 
+#ifdef DEBUG
     print_core_assignment(global_rank);
+#endif
 
     MPI_Comm_split(MPI_COMM_WORLD,node_key,0,&node_comm);
 
@@ -48,8 +63,6 @@ int MPI_Init(int *argc, char ***argv){
     MPI_Comm_size(root_comm, &root_size);
     MPI_Comm_rank(root_comm, &root_rank);
 
-    printf("%s %s %d %d %d %d %d %d %d\n",procname,hostname,node_key,global_size,global_rank,node_size,node_rank,root_size,root_rank);
-
     sprintf(stdoutname, "inject_log_%d.out", global_rank);
     sprintf(stderrname, "inject_log_%d.err", global_rank);
 
@@ -59,7 +72,7 @@ int MPI_Init(int *argc, char ***argv){
     
     sprintf(arg1, "%s", "inject");
     sprintf(arg2, "%d", global_rank);
-    sprintf(arg3, "%s", "bob.txt");
+    sprintf(arg3, "%s", "configuration.xml");
 
     args[0] = arg1;
     args[1] = arg2; 
@@ -72,7 +85,9 @@ int MPI_Init(int *argc, char ***argv){
     posix_spawn_file_actions_destroy(&action);
 
     if(ierr == 0){
+#ifdef DEBUG
       printf("Spawned process %d\n",process_id);
+#endif
     }else{
       printf("Error spawning process\n");
     }
@@ -85,14 +100,12 @@ int MPI_Init(int *argc, char ***argv){
       
        file_handle = fopen(filename, "r");
        if(file_handle != NULL){
-         printf("File found\n");
 	 fscanf (file_handle, "%d", &child_pid);    
          fclose(file_handle);
          remove(filename);
 	 cont = 0;
        }else{
          i++;
-         printf("Sleeping\n");
          sleep(1);
        }
     }
@@ -112,11 +125,15 @@ int MPI_Finalize(){
   int ierr;
   char hostname[1024];
   gethostname(hostname, 1024);
+#ifdef DEBUG
   printf("Finalizing intercept MPI on %s\n",hostname);
+#endif
   if(process_id != -1){
     ierr = kill(process_id, SIGINT);
     if(waitpid(process_id, &ierr, 0) != -1){
+#ifdef DEBUG
       printf("Inject process exited with status %i\n", ierr);
+#endif
     }else{
       printf("Problem with waitpid for inject process\n");
     }

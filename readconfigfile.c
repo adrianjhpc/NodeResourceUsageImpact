@@ -1,11 +1,5 @@
 #include "inject_definitions.h"
 
-mxml_type_t type_cb(mxml_node_t *);
-int get_int_data(mxml_node_t *, char *);
-const char * get_text_data(mxml_node_t *, char *);
-mxml_node_t * get_my_node(mxml_node_t *, char *);
-mxml_node_t * get_my_node_with_root(mxml_node_t *, mxml_node_t *, char *);
-
 int main(int argc, char **argv){
 
    FILE *fp;
@@ -16,6 +10,7 @@ int main(int argc, char **argv){
    mxml_node_t *experiment;
    mxml_node_t *placement;
    mxml_node_t *task;
+   int processes_per_node;
    int cores_per_node;
    int hyperthreads;
    int cores_per_socket;
@@ -61,7 +56,7 @@ int main(int argc, char **argv){
 
    printf("Cores per node %d hyperthreads %d\n",cores_per_node,hyperthreads);
 
-   sockets = get_int_data(hardware, "sockets");
+   sockets = get_int_data(hardware, "sockets_per_node");
    if(sockets == ERROR_INT){
      sockets = 1;
    }
@@ -89,6 +84,10 @@ int main(int argc, char **argv){
      return(1);
    }
 
+   processes_per_node = get_int_data(placement, "processes_per_node");
+   if(processes_per_node == ERROR_INT){
+     processes_per_node = 0;
+   }
    inject_process_per_node = get_int_data(placement, "inject_process_per_node");
    if(inject_process_per_node == ERROR_INT){
      inject_process_per_node = 0;
@@ -122,16 +121,20 @@ int main(int argc, char **argv){
    for(task = get_my_node(experiment, "inject_task"); task != NULL; task = get_my_node_with_root(task, experiment, "inject_task")){
      if(task != NULL){
        experiment_type = get_text_data(task, "type");
-       task_size =  get_int_data(task, "size");
-       task_freq = get_int_data(task, "freq");
-       if(strcmp(experiment_type,IO_SINGLE) != 0 && strcmp(experiment_type,IO_INDIVIDUAL) != 0){
-         printf("Experiment %s size %d freq %d\n", experiment_type, task_size, task_freq);
-       }else{
-         task_path = get_text_data(task, "path"); 
-         if(strcmp(task_path,ERROR_STR) == 0){
-           printf("Problem getting path for I/O task\n");
+       if(strcmp(experiment_type,PROFILE) != 0){
+         task_size =  get_int_data(task, "size");
+         task_freq = get_int_data(task, "freq");
+         if(strcmp(experiment_type,IO_SINGLE) != 0 && strcmp(experiment_type,IO_INDIVIDUAL) != 0){
+           printf("Experiment %s size %d freq %d\n", experiment_type, task_size, task_freq);
+         }else{
+           task_path = get_text_data(task, "path"); 
+           if(strcmp(task_path,ERROR_STR) == 0){
+             printf("Problem getting path for I/O task\n");
+           }
+           printf("Experiment %s size %d freq %d path %s\n", experiment_type, task_size, task_freq, task_path);
          }
-         printf("Experiment %s size %d freq %d path %s\n", experiment_type, task_size, task_freq, task_path);
+       }else{
+         printf("Experiment %s\n", experiment_type);
        }
      }
    }

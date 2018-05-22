@@ -18,13 +18,15 @@ int main(int argc, char **argv){
    node = mxmlNewElement(hardware, "cores_per_node");
    mxmlNewInteger(node, 24);
    node = mxmlNewElement(hardware, "hyperthreads");
-   mxmlNewInteger(node, 1);
+   mxmlNewInteger(node, 2);
    node =  mxmlNewElement(hardware, "sockets_per_node");
    mxmlNewInteger(node, 2);
 
    experiment = mxmlNewElement(tree, "experiment");
 
    placement = mxmlNewElement(experiment, "placement");
+   node = mxmlNewElement(placement, "processes_per_node");
+   mxmlNewInteger(node, 24);
    node = mxmlNewElement(placement, "inject_process_per_node");
    mxmlNewInteger(node, 2);
    node = mxmlNewElement(placement, "inject_process_per_socket");
@@ -32,20 +34,25 @@ int main(int argc, char **argv){
    node = mxmlNewElement(placement, "use_hyperthreads");
    mxmlNewText(node, 0, YES);
 
+/*
+   injecttask = mxmlNewElement(experiment, "inject_task");
+   node = mxmlNewElement(injecttask, "type");
+   mxmlNewText(node, 0, PROFILE);
+*/
 
    injecttask = mxmlNewElement(experiment, "inject_task");
    node = mxmlNewElement(injecttask, "type");
    mxmlNewText(node, 0, CPU_FP);
    node = mxmlNewElement(injecttask, "size");
-   mxmlNewInteger(node, 1000000);
+   mxmlNewInteger(node, 100000000);
    node = mxmlNewElement(injecttask, "freq");
    mxmlNewInteger(node, 1000000);
-
+/*
    injecttask = mxmlNewElement(experiment, "inject_task");
    node = mxmlNewElement(injecttask, "type");
    mxmlNewText(node, 0, MEM_FP);
    node = mxmlNewElement(injecttask, "size");
-   mxmlNewInteger(node, 1000000);
+   mxmlNewInteger(node, 500000000);
    node = mxmlNewElement(injecttask, "freq");
    mxmlNewInteger(node, 1000000);
 
@@ -58,7 +65,7 @@ int main(int argc, char **argv){
    mxmlNewInteger(node, 1000000);
    node = mxmlNewElement(injecttask, "path");
    mxmlNewText(node, 0, "/tmp/bob");
-
+*/
 
 
 

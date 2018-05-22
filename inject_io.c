@@ -1,6 +1,6 @@
 #include "inject_definitions.h"
 
-void *exercise_io_single_write(void *arguments){
+void *exercise_io_single_writes(void *arguments){
    int i;
    double *data;
    FILE * file_handle;
@@ -26,12 +26,12 @@ void *exercise_io_single_write(void *arguments){
      }else{
        printf("Error opening file %s\n",io_args->path);
      }
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      io_secs = io_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
      gettimeofday(&tv1, NULL);
      usleep(io_args->freq);
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      sleep_secs = sleep_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
    }
@@ -70,12 +70,12 @@ void *exercise_io_individual_writes(void *arguments){
      }else{
        printf("Error opening file %s\n",io_args->path);
      }
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      io_secs = io_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
      gettimeofday(&tv1, NULL);
      usleep(io_args->freq);
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      sleep_secs = sleep_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
    }

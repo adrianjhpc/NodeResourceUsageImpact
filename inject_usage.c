@@ -18,11 +18,18 @@ int main(int argc, char **argv){
   int i, ierr;
   int rank;
   int cores_per_node, processes_per_node, hyperthreads, placement;
+  int active = 1;
+  int ratio;
+  int papi_init = 0;
+  int retval;
   mycpu_t *cpu_args;
   mymem_t *mem_args;
+  configuration_t * conf;
 
+#ifdef DEBUG 
   printf("Inject process %ld started\n",getpid());
   fflush(stdout);
+#endif
 
   if(argc != 3){
     printf("Incorrect arguments passed to inject process. Exiting\n");
@@ -42,74 +49,92 @@ int main(int argc, char **argv){
 
   config_filename = argv[2];
 
-  if((file_handle = fopen(config_filename, "r")) != NULL){
-    printf("Problem opening config file %s in exercise resources. Exiting\n",config_filename);
-    fflush(stdout);
-    return 1;
+// This should not strictly be necessary because it should be done in the MPI Init call that starts this task
+// but it is included here to catch scenarios where this executable is run standalone.
+  if(validate_input_file(config_filename) == ERROR_INT){
+    printf("Problem validating configure file. Exiting\n");
+    return(1);
   }
 
-  cores_per_node = 24;
-  hyperthreads = 2;
-  processes_per_node = 24;
-  placement = rank - (processes_per_node*(rank/processes_per_node))+((cores_per_node*hyperthreads)-cores_per_node);
-
-  // Register the signal handler to allow child threads to be notified to stop gracefully.
-  if(signal(SIGINT, sig_handler) == SIG_ERR){
-    printf("Cannot catch SIGINT so exiting\n");
-    fflush(stdout);
-    return 1;
+  // Read in configuration data and store in the conf data structure.
+  conf = get_configuration(config_filename);
+  
+  // Work out if this process should run anything and where it should run stuff (i.e. what core, what hyperthread, etc...)
+  // If we are running less inject processes per node than mpi processes per node
+  // The order of the division is not important for the calucation below.
+  if(conf->inject_process_per_node/conf->processes_per_node != 1){
+    ratio = conf->processes_per_node/conf->inject_process_per_node;
+    if((rank)%ratio != 0){
+      active = 0;
+    }
   }
 
-  print_core_assignment();
-  change_core_assignment(getpid(),placement);
-  print_core_assignment();
+  if(active){
 
- // if(rank%processes_per_node == 0){
-  if(rank > -1){
-// This is freed by the calling thread, not by this process.
-  cpu_args = (mycpu_t *) malloc(sizeof(mycpu_t)); 
-  cpu_args->size = 100000000;
-  cpu_args->freq = 1000000;
-  cpu_args->flag = &run_flag;
-  cpu_args->core = placement;
- 
-  printf("Starting first thread\n");
-  fflush(stdout);
- 
-  ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_cpu_fp, (void *) cpu_args);
-  if(ierr == 0){
-    current_thread_max = current_thread_max + 1;
-  }else{
-     printf("Problem creating thread %d\n",ierr);
-     fflush(stdout);
-  }
+    // Work out where this process should run stuff (i.e. what core, what hyperthread, etc...)
+    placement = rank - (conf->processes_per_node*(rank/conf->processes_per_node))+(conf->use_hyperthreads*((conf->cores_per_node*conf->hyperthreads)-conf->cores_per_node));
+    // Register the signal handler to allow child threads to be notified to stop gracefully.
+    if(signal(SIGINT, sig_handler) == SIG_ERR){
+      printf("Cannot catch SIGINT so exiting\n");
+      fflush(stdout);
+      return 1;
+    }
 
-/*
-// This is freed by the calling thread, not by this process.
-  mem_args = (mymem_t *) malloc(sizeof(mymem_t));
-  mem_args->size = 1000000;
-  mem_args->freq = 1000000;
-  mem_args->flag = &run_flag;
-  mem_args->core = rank+24;
+    print_core_assignment();
+    change_core_assignment(getpid(),placement);
+    print_core_assignment();
 
-  printf("Starting second thread\n");
-  fflush(stdout);
 
-  ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_memory_fp, (void *) mem_args);
-  if(ierr == 0){
-    current_thread_max = current_thread_max + 1;
-  }else{
-     printf("Problem creating thread %d\n",ierr);
-     fflush(stdout);
-  }
+    for(i=0;i<conf->task_count;i++){
+      // We pretend the task is a mycpu_t type of task to set the common data for all tasks, namely core and flag. This works because the 
+      // ordering of the all the structures associated with inject tasks have core and flag before any custom elements. This doesn't work for the 
+      // profile type.
+      if(strcmp(conf->task_types[i], PROFILE) != 0){
+        ((mycpu_t *)conf->tasks[i])->core = placement;
+        ((mycpu_t *)conf->tasks[i])->flag = &run_flag;
+      }else{
+        ((myprof_t *)conf->tasks[i])->core = placement;
+        ((myprof_t *)conf->tasks[i])->flag = &run_flag;
+      }
+      if(strcmp(conf->task_types[i], CPU_INT) == 0){
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_cpu_int, (void *) conf->tasks[i]);
+      }else if(strcmp(conf->task_types[i], CPU_FP) == 0){
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_cpu_fp, (void *) conf->tasks[i]);
+      }else if(strcmp(conf->task_types[i], MEM_INT) == 0){
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_memory_int, (void *) conf->tasks[i]);
+      }else if(strcmp(conf->task_types[i], MEM_FP) == 0){
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_memory_fp, (void *) conf->tasks[i]);
+      }else if(strcmp(conf->task_types[i], IO_SINGLE) == 0){ 
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_io_single_writes, (void *) conf->tasks[i]);
+      }else if(strcmp(conf->task_types[i], IO_INDIVIDUAL) == 0){
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_io_individual_writes, (void *) conf->tasks[i]);
+      }else if(strcmp(conf->task_types[i], NETWORK) == 0){
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_network, (void *) conf->tasks[i]);
+      }else if(strcmp(conf->task_types[i], PROFILE) == 0 && papi_init == 0){
+        retval = PAPI_library_init(PAPI_VER_CURRENT);
+        if(retval != PAPI_VER_CURRENT){
+          printf("PAPI library init error: %d %d\n",retval,PAPI_VER_CURRENT);
+          ierr = 1;
+        }else{
+          papi_init = 1;
+          ierr = pthread_create(&thread_ids[current_thread_max], NULL, &profile, (void *) conf->tasks[i]);
+        } 
+     }
 
-*/
-  for(i=0; i<current_thread_max; i++){
-    printf("Joining thread %d\n",i);
-    fflush(stdout);
-    pthread_join(thread_ids[i], NULL);
-  }
+      if(ierr == 0){
+        current_thread_max = current_thread_max + 1;
+      }else{
+        printf("Problem creating thread %d\n",ierr);
+        fflush(stdout);
+      }
+    }
 
+    for(i=0; i<current_thread_max; i++){
+      printf("Joining thread %d\n",i);
+      fflush(stdout);
+      pthread_join(thread_ids[i], NULL);
+    }
+  // End of the if(active) block
   }
 
   return 0;

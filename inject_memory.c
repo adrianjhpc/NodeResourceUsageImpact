@@ -24,12 +24,12 @@ void *exercise_memory_int(void *arguments){
      for(i=0;i<mem_args->size;i++){
        value = value + data[i];
      }
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      mem_secs = mem_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
      gettimeofday(&tv1, NULL);
      usleep(mem_args->freq);
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      sleep_secs = sleep_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
    }
@@ -37,7 +37,7 @@ void *exercise_memory_int(void *arguments){
    free(data);
    free(arguments);
 // Value is printed out here to stop the compile removing the compute loop above when optimisation is turned on.
-   printf("finished exercise_memory_int: compute ran for: %lf seconds, sleep ran for: %lf seconds (res: %lf)\n", mem_secs, sleep_secs, value);
+   printf("finished exercise_memory_int: memory ran for: %lf seconds, sleep ran for: %lf seconds (res: %lf)\n", mem_secs, sleep_secs, value);
    fflush(stdout);
 }
 
@@ -55,7 +55,6 @@ void *exercise_memory_fp(void *arguments){
    change_core_assignment(0,mem_args->core);
 
    data = (double *)malloc(sizeof(double)*mem_args->size);
-
    printf("exercise_memory_fp running on core %d\n",sched_getcpu());
    fflush(stdout);
    while(*(mem_args->flag)){
@@ -64,19 +63,18 @@ void *exercise_memory_fp(void *arguments){
      for(i=0;i<mem_args->size;i++){
        value = value + data[i];
      }
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      mem_secs = mem_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
      gettimeofday(&tv1, NULL);
      usleep(mem_args->freq);
-     gettimeofday(&tv1, NULL);
+     gettimeofday(&tv2, NULL);
      sleep_secs = sleep_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
-
    }
    free(data);
    free(arguments);
 // Value is printed out here to stop the compile removing the compute loop above when optimisation is turned on.
-   printf("finished exercise_memory_fp: compute ran for: %lf seconds, sleep ran for: %lf seconds (res: %lf)\n", mem_secs, sleep_secs, value);
+   printf("finished exercise_memory_fp: memory ran for: %lf seconds, sleep ran for: %lf seconds (res: %lf)\n", mem_secs, sleep_secs, value);
    fflush(stdout);
 }

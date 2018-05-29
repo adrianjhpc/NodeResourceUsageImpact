@@ -3,6 +3,14 @@
 #include "definitions.h"
 #include "inject_definitions.h"
 
+// Function to intercept Fortran MPI call to MPI_INIT. Passes through to the 
+// C version of MPI_Init following this routine.
+void mpi_init_(int *ierr){
+  *ierr = MPI_Init(NULL, NULL);
+}
+
+// Function to intercept MPI_Init, call the MPI library init using PMPI_Init, 
+// and then setup and run the inject process.
 int MPI_Init(int *argc, char ***argv){
   char hostname[1024];
   int global_size, global_rank;
@@ -121,6 +129,14 @@ int MPI_Init(int *argc, char ***argv){
   return ierr;
 }
 
+// Function to intercept Fortran MPI call to MPI_FINALIZE. Passes through to the
+// C version of MPI_Finalize following this routine.
+void mpi_finalize_(int *ierr){
+  *ierr = MPI_Finalize();
+}
+
+// Function to intercept MPI_Finalize, kill the inject process, and then call the MPI
+// library finalize using PMPI_Finalize.
 int MPI_Finalize(){
   int ierr;
   char hostname[1024];

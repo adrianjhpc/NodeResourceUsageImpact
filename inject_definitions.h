@@ -28,6 +28,7 @@ typedef struct cpu_arguments {
   int size;
   int freq;
   int core;
+  int rank;
   int *flag; 
 } mycpu_t;
 
@@ -35,6 +36,7 @@ typedef struct mem_arguments {
   int size;
   int freq;
   int core;
+  int rank;
   int *flag;
 } mymem_t;
 
@@ -42,6 +44,7 @@ typedef struct io_arguments {
   int size;
   int freq;
   int core;
+  int rank;
   int *flag;
   char *path;
 } myio_t;
@@ -50,11 +53,13 @@ typedef struct net_arguments {
   int size;
   int freq;
   int core;
+  int rank;
   int *flag;
 } mynet_t;
 
 typedef struct profile_arguments {
   int core;
+  int rank;
   int *flag;
 } myprof_t;
 

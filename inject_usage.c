@@ -90,9 +90,11 @@ int main(int argc, char **argv){
       // ordering of the all the structures associated with inject tasks have core and flag before any custom elements. This doesn't work for the 
       // profile type.
       if(strcmp(conf->task_types[i], PROFILE) != 0){
+        ((mycpu_t *)conf->tasks[i])->rank = rank;
         ((mycpu_t *)conf->tasks[i])->core = placement;
         ((mycpu_t *)conf->tasks[i])->flag = &run_flag;
       }else{
+        ((myprof_t *)conf->tasks[i])->rank = rank;
         ((myprof_t *)conf->tasks[i])->core = placement;
         ((myprof_t *)conf->tasks[i])->flag = &run_flag;
       }

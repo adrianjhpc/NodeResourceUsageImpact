@@ -3,7 +3,7 @@ SRCMPI	= mpi_intercept_library.c inject_config.c hello.c
 OBJMPI	=$(SRCMPI:.c=.o)
 
 CC	= cc
-PP	= -g 
+PP	= -g #-DDEBUG 
 
 CFLAGS  = -O3 -I mxml/ -I papi/include $(PP)
 LIBS    = -L/home/z01/z01/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread

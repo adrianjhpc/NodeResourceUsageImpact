@@ -38,7 +38,7 @@ int main(int argc, char **argv){
    injecttask = mxmlNewElement(experiment, "inject_task");
    node = mxmlNewElement(injecttask, "type");
    mxmlNewText(node, 0, PROFILE);
-*/
+
 
    injecttask = mxmlNewElement(experiment, "inject_task");
    node = mxmlNewElement(injecttask, "type");
@@ -47,7 +47,7 @@ int main(int argc, char **argv){
    mxmlNewInteger(node, 100000000);
    node = mxmlNewElement(injecttask, "freq");
    mxmlNewInteger(node, 1000000);
-/*
+
    injecttask = mxmlNewElement(experiment, "inject_task");
    node = mxmlNewElement(injecttask, "type");
    mxmlNewText(node, 0, MEM_FP);
@@ -55,7 +55,7 @@ int main(int argc, char **argv){
    mxmlNewInteger(node, 500000000);
    node = mxmlNewElement(injecttask, "freq");
    mxmlNewInteger(node, 1000000);
-
+*/
    injecttask = mxmlNewElement(experiment, "inject_task");
    node = mxmlNewElement(injecttask, "type");
    mxmlNewText(node, 0, IO_SINGLE);
@@ -65,7 +65,7 @@ int main(int argc, char **argv){
    mxmlNewInteger(node, 1000000);
    node = mxmlNewElement(injecttask, "path");
    mxmlNewText(node, 0, "/tmp/bob");
-*/
+
 
 
 

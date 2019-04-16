@@ -2,6 +2,10 @@
 
 #include "definitions.h"
 #include "inject_definitions.h"
+#if defined(__aarch64__)
+#include <sys/syscall.h>
+#endif
+
 
 // Function to intercept Fortran MPI call to MPI_INIT. Passes through to the 
 // C version of MPI_Init following this routine.
@@ -158,8 +162,19 @@ int MPI_Finalize(){
   return PMPI_Finalize();
 }
 
-
-unsigned long tacc_rdtscp(int *chip, int *core)
+#if defined(__aarch64__)
+// TODO: This might be general enough to provide the functionality for any system 
+// regardless of processor type given we aren't worried about thread/process migration.
+// Test on Intel systems and see if we can get rid of the architecture specificity 
+// of the code.
+unsigned long get_processor_and_core(int *chip, int *core){
+  return syscall(SYS_getcpu, &core, &chip, NULL);
+}
+// TODO: Add in AMD function
+#else
+// If we're not on an ARM processor assume we're on an intel processor and use the 
+// rdtscp instruction. 
+unsigned long get_processor_and_core(int *chip, int *core)
 {
     unsigned long a,d,c;
     __asm__ volatile("rdtscp" : "=a" (a), "=d" (d), "=c" (c));
@@ -167,6 +182,7 @@ unsigned long tacc_rdtscp(int *chip, int *core)
     *core = c & 0xFFF;
     return ((unsigned long)a) | (((unsigned long)d) << 32);;
 }
+#endif
 
 int name_to_colour(const char *name){
   int res;
@@ -190,7 +206,7 @@ int get_key(char *name){
   int core;
 
   MPI_Get_processor_name(name, &len);
-  tacc_rdtscp(&cpu,&core);
+  get_processor_and_core(&cpu,&core);
   name = name + cpu;
   lpar_key = name_to_colour(name);
 

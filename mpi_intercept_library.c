@@ -184,19 +184,42 @@ unsigned long get_processor_and_core(int *chip, int *core)
 }
 #endif
 
+// The routine convert a string (name) into a number
+// for use in a MPI_Comm_split call (where the number is
+// known as a colour). It is effectively a hashing function
+// for strings but is not necessarily robust (i.e. does not
+// guarantee it is collision free) for all strings, but it
+// should be reasonable for strings that different by small
+// amounts (i.e the name of nodes where they different by a
+// number of set of numbers and letters, for instance
+// login01,login02..., or cn01q94,cn02q43, etc...)
 int name_to_colour(const char *name){
-  int res;
-  const char *p;
-  res =0;
-  for(p=name; *p ; p++){
-    res = (131*res) + *p;
-  }
+	int res;
+	int multiplier = 131;
+	const char *p;
 
-  if( res < 0 ){
-    res = -res;
-  }
-  return res;
+	res = 0;
+	for(p=name; *p ; p++){
+		// Guard against integer overflow.
+		if (multiplier > 0 && (res + *p) > (INT_MAX / multiplier)) {
+			// If overflow looks likely (due to the calculation above) then
+			// simply flip the result to make it negative
+			res = -res;
+		}else{
+			// If overflow is not going to happen then undertake the calculation
+			res = (multiplier*res);
+		}
+		// Add on the new character here.
+		res = res + *p;
+	}
+	// If we have ended up with a negative result, invert it to make it positive because
+	// the functionality (in MPI) that we will use this for requires the int to be positive.
+	if( res < 0 ){
+		res = -res;
+	}
+	return res;
 }
+
 
 int get_key(char *name){
 

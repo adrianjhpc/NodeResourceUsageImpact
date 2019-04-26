@@ -10,6 +10,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <spawn.h>
+#include <limits.h>
 
 int get_key(char *);
 void print_core_assignment(int);

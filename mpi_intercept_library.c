@@ -21,8 +21,8 @@ int MPI_Init(int *argc, char ***argv){
   int node_size, node_rank;
   int node_key;
   int root_size, root_rank;
-  int node_comm;
-  int root_comm;
+  MPI_Comm node_comm;
+  MPI_Comm root_comm;
   char procname[MPI_MAX_PROCESSOR_NAME];
   int ierr;
   char *args[4];

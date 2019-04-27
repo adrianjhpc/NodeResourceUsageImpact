@@ -97,8 +97,6 @@ int MPI_Init(int *argc, char ***argv){
 
 		ierr = posix_spawn(&process_id, ".inject", &action, NULL, args, environ);
 
-		posix_spawn_file_actions_destroy(&action);
-
 		if(ierr == 0){
 #ifdef DEBUG
 			printf("Spawned process %d\n",process_id);
@@ -129,6 +127,9 @@ int MPI_Init(int *argc, char ***argv){
 		}else{
 			process_id = child_pid;
 		}
+                // Clean up initialisation data
+                posix_spawn_file_actions_destroy(&action);
+
 	}else{
 		printf("Error initialising MPI on %s\n",hostname);
 	}

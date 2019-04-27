@@ -30,7 +30,7 @@ void *exercise_cpu_int(void *arguments){
    }
 
    free(arguments);
-// Value is printed out here to stop the compile removing the compute loop above when optimisation is turned on.
+// Value is printed out here to stop the compiler removing the compute loop above when optimisation is turned on.
    printf("finished exercise_cpu_int: compute ran for: %lf seconds, sleep ran for: %lf seconds (res: %lf)\n", comp_secs, sleep_secs, value);
    fflush(stdout);
 }
@@ -65,7 +65,7 @@ void *exercise_cpu_fp(void *arguments){
 
    }
    free(arguments);
-// Value is printed out here to stop the compile removing the compute loop above when optimisation is turned on.
+// Value is printed out here to stop the compiler removing the compute loop above when optimisation is turned on.
    printf("finished exercise_cpu_fp: compute ran for: %lf seconds, sleep ran for: %lf seconds (res: %lf)\n", comp_secs, sleep_secs, value);
    fflush(stdout);
 }

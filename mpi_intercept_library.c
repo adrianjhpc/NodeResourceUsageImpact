@@ -23,7 +23,10 @@ int MPI_Init(int *argc, char ***argv){
   int root_size, root_rank;
   MPI_Comm node_comm;
   MPI_Comm root_comm;
-  char procname[MPI_MAX_PROCESSOR_NAME];
+  // Make the procname array big enough to hold a processor name
+  // and a CPU number. The CPU_STRING_SIZE extra here is to hold a integer for CPU number
+  // assuming we're using 32-bit integer with a bit of space to spare.
+  char procname[MPI_MAX_PROCESSOR_NAME+CPU_STRING_SIZE];
   int ierr;
   char *args[4];
   char arg1[20];
@@ -35,11 +38,11 @@ int MPI_Init(int *argc, char ***argv){
   posix_spawn_file_actions_t action;
   FILE * file_handle;
   int i, cont, child_pid;
-  
+
   ierr = PMPI_Init(argc, argv);
-
+  
   gethostname(hostname, 1024);
-
+  
   if(ierr == 0){
 
 #ifdef DEBUG
@@ -217,6 +220,7 @@ int name_to_colour(const char *name){
 	if( res < 0 ){
 		res = -res;
 	}
+
 	return res;
 }
 
@@ -227,10 +231,22 @@ int get_key(char *name){
   int lpar_key;
   int cpu;
   int core;
+  char cpu_string[CPU_STRING_SIZE];
 
   MPI_Get_processor_name(name, &len);
+
   get_processor_and_core(&cpu,&core);
-  name = name + cpu;
+
+  snprintf(cpu_string, CPU_STRING_SIZE*sizeof(cpu_string[0]), "%d", cpu);
+
+  // Make sure we don't overflow the name buffer
+  if(len + CPU_STRING_SIZE < MPI_MAX_PROCESSOR_NAME + CPU_STRING_SIZE){
+    strcat(name, cpu_string);
+  }else{
+    printf("Not enough space to create processor name string. Aborting\n");
+    exit(1);
+  }
+
   lpar_key = name_to_colour(name);
 
   lpar_key = cpu + lpar_key;

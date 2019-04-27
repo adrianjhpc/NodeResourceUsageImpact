@@ -12,6 +12,11 @@
 #include <spawn.h>
 #include <limits.h>
 
+// This value is used to specify the size of the character buffer used to 
+// convert and integer into a string. 20 should be more than enough characters 
+// to hold a 32-bit integer as a string.
+#define CPU_STRING_SIZE 20
+
 int get_key(char *);
 void print_core_assignment(int);
 void print_worker_core_assignment(pid_t,int);

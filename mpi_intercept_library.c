@@ -171,7 +171,7 @@ int MPI_Finalize(){
 // Test on Intel systems and see if we can get rid of the architecture specificity 
 // of the code.
 unsigned long get_processor_and_core(int *chip, int *core){
-	return syscall(SYS_getcpu, &core, &chip, NULL);
+	return syscall(SYS_getcpu, core, chip, NULL);
 }
 // TODO: Add in AMD function
 #else

@@ -92,7 +92,8 @@ void *exercise_io_individual_writes(void *);
 void *profile(void *);
 
 void print_core_assignment();
-void change_core_assignment(pid_t,int);
+void change_core_assignment(pid_t, int);
+int calculate_placement(int, configuration_t *);
 static char *cpuset_to_cstr(cpu_set_t *, char *);
 
 mxml_type_t type_cb(mxml_node_t *);

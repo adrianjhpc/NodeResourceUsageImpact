@@ -37,7 +37,7 @@ int main(int argc, char **argv){
     return 1;
   }
   rank = atoi(argv[1]);
-/*  sprintf(filename,"%d_pid_number.txt",rank);
+  sprintf(filename,"%d_pid_number.txt",rank);
   file_handle = fopen(filename, "w");
   if (file_handle == NULL) {
     printf("Cannot open file to exchange pid from child inject process to parent MPI process. Exiting\n");
@@ -46,7 +46,7 @@ int main(int argc, char **argv){
     fprintf(file_handle,"%d",getpid());
     fclose(file_handle);
   }
-*/
+
   config_filename = argv[2];
 
 // This should not strictly be necessary because it should be done in the MPI Init call that starts this task

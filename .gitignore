@@ -3,6 +3,7 @@
 inject
 hello
 writeconfigfile
+readconfigfile
 configuration.xml
 mxml/
 papi/

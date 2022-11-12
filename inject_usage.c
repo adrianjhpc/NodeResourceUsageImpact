@@ -37,8 +37,6 @@ int main(int argc, char **argv){
     return 1;
   }
   rank = atoi(argv[1]);
-  // File to exchange PID is no longer needed.
-  /*
   sprintf(filename,"%d_pid_number.txt",rank);
   file_handle = fopen(filename, "w");
   if (file_handle == NULL) {
@@ -48,7 +46,6 @@ int main(int argc, char **argv){
     fprintf(file_handle,"%d",getpid());
     fclose(file_handle);
   }
-*/
   config_filename = argv[2];
 
 // This should not strictly be necessary because it should be done in the MPI Init call that starts this task

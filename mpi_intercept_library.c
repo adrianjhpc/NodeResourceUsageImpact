@@ -7,15 +7,65 @@
 #endif
 
 
-// Function to intercept Fortran MPI call to MPI_INIT. Passes through to the 
+// Function to intercept Fortran MPI call to MPI_INIT. Passes through to the
 // C version of MPI_Init following this routine.
-void mpi_init_(int *ierr){
-	*ierr = MPI_Init(NULL, NULL);
+void mpi_init_thread_(int required, int *provided, int *ierr){
+        *ierr = MPI_Init_thread(NULL, NULL, required, provided);
 }
 
-// Function to intercept MPI_Init, call the MPI library init using PMPI_Init, 
+// Function to intercept Fortran MPI call to MPI_INIT. Passes through to the
+// C version of MPI_Init following this routine.
+void mpi_init_(int *ierr){
+        *ierr = MPI_Init(NULL, NULL);
+}
+
+
+// and then setup and run the inject process.
+int MPI_Init_thread(int *argc, char ***argv, int required, int *provided){
+
+        int ierr;
+
+        ierr = PMPI_Init_thread(argc, argv, required, provided);
+
+        if(ierr == 0){
+
+                ierr = setup_inject();
+
+        } else {
+
+                printf("Error initialising MPI\n");
+        }
+
+
+        return ierr;
+
+}
+
+// Function to intercept MPI_Init, call the MPI library init using PMPI_Init,
 // and then setup and run the inject process.
 int MPI_Init(int *argc, char ***argv){
+
+        int ierr;
+
+        ierr = PMPI_Init(argc, argv);
+
+        if(ierr == 0){
+
+                ierr = setup_inject();
+
+        } else {
+
+                printf("Error initialising MPI\n");
+        }
+
+
+        return ierr;
+
+}
+
+
+
+int setup_inject(){
 	char hostname[1024];
 	int global_size, global_rank;
 	int node_size, node_rank;
@@ -39,100 +89,80 @@ int MPI_Init(int *argc, char ***argv){
 	FILE * file_handle;
 	int i, cont, child_pid;
 
-	ierr = PMPI_Init(argc, argv);
-
 	gethostname(hostname, 1024);
 
-	if(ierr == 0){
-
 #ifdef DEBUG
-		printf("Initialising intercept MPI on %s\n",hostname);
+	printf("Initialising intercept MPI on %s\n",hostname);
 #endif
 
-		// This is done here to stop the MPI run before the inject application is launched in the case
-		// there is an issue with the inject configuration file. If we only did this in the inject application
-		// then it would exit but the MPI program would continue without the inject tasks running, which we
-		// want to avoid.
-		if(validate_input_file("configuration.xml") == ERROR_INT){
-			printf("Problem validating configure file for inject application. Exiting\n");
-			return(1);
-		}
-
-
-		MPI_Comm_size(MPI_COMM_WORLD, &global_size);
-		MPI_Comm_rank(MPI_COMM_WORLD, &global_rank);
-
-		node_key = get_key(procname);
-
-#ifdef DEBUG
-		print_core_assignment(global_rank);
-#endif
-
-		MPI_Comm_split(MPI_COMM_WORLD,node_key,0,&node_comm);
-
-		MPI_Comm_size(node_comm, &node_size);
-		MPI_Comm_rank(node_comm, &node_rank);
-
-		MPI_Comm_split(MPI_COMM_WORLD,node_rank,0,&root_comm);
-
-		MPI_Comm_size(root_comm, &root_size);
-		MPI_Comm_rank(root_comm, &root_rank);
-
-		sprintf(stdoutname, "inject_log_%d.out", global_rank);
-		sprintf(stderrname, "inject_log_%d.err", global_rank);
-
-		posix_spawn_file_actions_init(&action);
-		posix_spawn_file_actions_addopen(&action, STDOUT_FILENO, stdoutname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		posix_spawn_file_actions_addopen(&action, STDERR_FILENO, stderrname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-
-		sprintf(arg1, "%s", "inject");
-		sprintf(arg2, "%d", global_rank);
-		sprintf(arg3, "%s", "configuration.xml");
-
-		args[0] = arg1;
-		args[1] = arg2;
-		args[2] = arg3;
-		args[3] = NULL;
-
-
-		ierr = posix_spawn(&process_id, ".inject", &action, NULL, args, environ);
-
-		if(ierr == 0){
-#ifdef DEBUG
-			printf("Spawned process %d\n",process_id);
-#endif
-		}else{
-			printf("Error spawning process\n");
-		}
-
-		child_pid = -1;
-		cont = 1;
-		i = 0;
-		while(cont && i < 10){
-			sprintf(filename, "%d_pid_number.txt", global_rank);
-
-			file_handle = fopen(filename, "r");
-			if(file_handle != NULL){
-				fscanf (file_handle, "%d", &child_pid);
-				fclose(file_handle);
-				remove(filename);
-				cont = 0;
-			}else{
-				i++;
-				sleep(1);
-			}
-		}
-		if(child_pid == -1){
-			printf("Problem getting child pid through file: %s\n",filename);
-		}else{
-			process_id = child_pid;
-		}
-                // Clean up initialisation data
-                posix_spawn_file_actions_destroy(&action);
-
-	}else{
-		printf("Error initialising MPI on %s\n",hostname);
+	// This is done here to stop the MPI run before the inject application is launched in the case
+	// there is an issue with the inject configuration file. If we only did this in the inject application
+	// then it would exit but the MPI program would continue without the inject tasks running, which we
+	// want to avoid.
+	if(validate_input_file("configuration.xml") == ERROR_INT){
+		printf("Problem validating configure file for inject application. Exiting\n");
+		return(1);
 	}
+
+
+	MPI_Comm_size(MPI_COMM_WORLD, &global_size);
+	MPI_Comm_rank(MPI_COMM_WORLD, &global_rank);
+
+#ifdef DEBUG
+	print_core_assignment(global_rank);
+#endif
+
+	sprintf(stdoutname, "inject_log_%d.out", global_rank);
+	sprintf(stderrname, "inject_log_%d.err", global_rank);
+
+	posix_spawn_file_actions_init(&action);
+	posix_spawn_file_actions_addopen(&action, STDOUT_FILENO, stdoutname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	posix_spawn_file_actions_addopen(&action, STDERR_FILENO, stderrname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+	sprintf(arg1, "%s", "inject");
+	sprintf(arg2, "%d", global_rank);
+	sprintf(arg3, "%s", "configuration.xml");
+
+	args[0] = arg1;
+	args[1] = arg2;
+	args[2] = arg3;
+	args[3] = NULL;
+
+
+	ierr = posix_spawn(&process_id, ".inject", &action, NULL, args, environ);
+
+	if(ierr == 0){
+#ifdef DEBUG
+		printf("Spawned process %d\n",process_id);
+#endif
+	}else{
+		printf("Error spawning process\n");
+	}
+
+	child_pid = -1;
+	cont = 1;
+	i = 0;
+	while(cont && i < 10){
+		sprintf(filename, "%d_pid_number.txt", global_rank);
+
+		file_handle = fopen(filename, "r");
+		if(file_handle != NULL){
+			fscanf (file_handle, "%d", &child_pid);
+			fclose(file_handle);
+			remove(filename);
+			cont = 0;
+		}else{
+			i++;
+			sleep(1);
+		}
+	}
+	if(child_pid == -1){
+		printf("Problem getting child pid through file: %s\n",filename);
+	}else{
+		process_id = child_pid;
+	}
+        // Clean up initialisation data
+        posix_spawn_file_actions_destroy(&action);
 
 	return ierr;
 }

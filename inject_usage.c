@@ -27,7 +27,7 @@ int main(int argc, char **argv){
   configuration_t * conf;
 
 #ifdef DEBUG 
-  printf("Inject process %ld started\n",getpid());
+  printf("Inject process %d started\n",getpid());
   fflush(stdout);
 #endif
 
@@ -67,7 +67,7 @@ int main(int argc, char **argv){
   if(conf->inject_process_per_node/conf->processes_per_node != 1){
     // If we reach here then the number of inject processes per node != the number of application processes per node
 #ifdef DEBUG
-    printf("Inject process %ld: rank %d More or less inject processes (%d) than application processes (%d)\n",getpid(),rank,conf->inject_process_per_node,conf->processes_per_node);
+    printf("Inject process %d: rank %d More or less inject processes (%d) than application processes (%d)\n",getpid(),rank,conf->inject_process_per_node,conf->processes_per_node);
 #endif
     ratio = conf->processes_per_node/conf->inject_process_per_node;
     // Rebase rank to start at 1 to ensure we correctly include 

@@ -41,5 +41,7 @@ void *exercise_network(void *arguments){
 //   }
 
    free(arguments);
+
+   pthread_exit(NULL);
 }
 

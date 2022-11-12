@@ -37,8 +37,10 @@ void *exercise_memory_int(void *arguments){
    free(data);
    free(arguments);
 // Value is printed out here to stop the compile removing the compute loop above when optimisation is turned on.
-  printf("finished exercise_memory_int: memory ran for: %lf seconds, sleep ran for: %lf seconds, so was active for %lf%% of the time (res: %lf)\n", mem_secs, sleep_secs, 100*(mem_secs/(mem_secs + sleep_secs)), value);
+   printf("finished exercise_memory_int: memory ran for: %lf seconds, sleep ran for: %lf seconds, so was active for %lf%% of the time (res: %d)\n", mem_secs, sleep_secs, 100*(mem_secs/(mem_secs + sleep_secs)), value);
    fflush(stdout);
+
+   pthread_exit(NULL);
 }
 
 void *exercise_memory_fp(void *arguments){
@@ -77,4 +79,6 @@ void *exercise_memory_fp(void *arguments){
 // Value is printed out here to stop the compile removing the compute loop above when optimisation is turned on.
    printf("finished exercise_memory_fp: memory ran for: %lf seconds, sleep ran for: %lf seconds, so was active for %lf%% of the time (res: %lf)\n", mem_secs, sleep_secs, 100*(mem_secs/(mem_secs + sleep_secs)), value);
    fflush(stdout);
+
+   pthread_exit(NULL);
 }

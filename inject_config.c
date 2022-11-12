@@ -189,7 +189,21 @@ configuration_t * get_configuration(char *filename){
            free(conf->task_types);
            free(conf);
            return(NULL);
-         }
+	 }
+	 ((mycpu_t *)conf->tasks[i])->percent = get_int_data(task, "percent");
+         if(((mycpu_t *)conf->tasks[i])->percent == ERROR_INT){
+           printf("Error with configuration file, inject task is missing task_percent.\n");
+           free(conf->tasks);
+           free(conf->task_types);
+           free(conf);
+           return(NULL);
+         }else if(((mycpu_t *)conf->tasks[i])->percent > 100){
+           printf("Error with configuration file, inject task task_percent is greater than 100.\n");
+           free(conf->tasks);
+           free(conf->task_types);
+           free(conf);
+           return(NULL);
+	 }
          if(strcmp(experiment_type,IO_SINGLE) != 0 && strcmp(experiment_type,IO_INDIVIDUAL) != 0){
          }else{
            temp_text = get_text_data(task, "path");

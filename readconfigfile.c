@@ -19,6 +19,7 @@ int main(int argc, char **argv){
    int inject_process_per_socket;
    int use_hyperthreads;
    const char *experiment_type;
+   int task_percent;
    int task_freq;
    int task_size;
    int task_count; 
@@ -124,14 +125,15 @@ int main(int argc, char **argv){
        if(strcmp(experiment_type,PROFILE) != 0){
          task_size =  get_int_data(task, "size");
          task_freq = get_int_data(task, "freq");
+	 task_percent = get_int_data(task, "percent");
          if(strcmp(experiment_type,IO_SINGLE) != 0 && strcmp(experiment_type,IO_INDIVIDUAL) != 0){
-           printf("Experiment %s size %d freq %d\n", experiment_type, task_size, task_freq);
+           printf("Experiment %s size %d freq %d percentage %d%%\n", experiment_type, task_size, task_freq, task_percent);
          }else{
            task_path = get_text_data(task, "path"); 
            if(strcmp(task_path,ERROR_STR) == 0){
              printf("Problem getting path for I/O task\n");
            }
-           printf("Experiment %s size %d freq %d path %s\n", experiment_type, task_size, task_freq, task_path);
+           printf("Experiment %s size %d freq %d percentage %d%% path %s\n", experiment_type, task_size, task_freq, task_percent, task_path);
          }
        }else{
          printf("Experiment %s\n", experiment_type);

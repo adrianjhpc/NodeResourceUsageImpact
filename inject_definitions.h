@@ -31,6 +31,7 @@
 typedef struct cpu_arguments {
   int size;
   int freq;
+  int percent;
   int core;
   int rank;
   int *flag; 
@@ -39,6 +40,7 @@ typedef struct cpu_arguments {
 typedef struct mem_arguments {
   int size;
   int freq;
+  int percent;
   int core;
   int rank;
   int *flag;
@@ -47,6 +49,7 @@ typedef struct mem_arguments {
 typedef struct io_arguments {
   int size;
   int freq;
+  int percent;
   int core;
   int rank;
   int *flag;
@@ -56,6 +59,7 @@ typedef struct io_arguments {
 typedef struct net_arguments {
   int size;
   int freq;
+  int percent;
   int core;
   int rank;
   int *flag;

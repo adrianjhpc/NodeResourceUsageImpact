@@ -1,6 +1,6 @@
 #include "inject_definitions.h"
 
-void *exercise_memory_int(void *arguments){
+void exercise_memory_int(void *arguments){
    int value = 0;
    int i;
    int *data;
@@ -41,7 +41,7 @@ void *exercise_memory_int(void *arguments){
    fflush(stdout);
 }
 
-void *exercise_memory_fp(void *arguments){
+void exercise_memory_fp(void *arguments){
    double value = 0.0;
    int i;
    double *data;

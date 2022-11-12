@@ -6,6 +6,7 @@
 #include <sys/sysinfo.h>
 #include <mxml.h>
 #include <papi.h>
+#include <sys/time.h>
 
 #define MAX_THREADS 100
 
@@ -78,18 +79,18 @@ typedef struct configuration {
   char ** task_types;
 } configuration_t;
 
-void *exercise_cpu_int(void *);
-void *exercise_cpu_fp(void *);
+void exercise_cpu_int(void *);
+void exercise_cpu_fp(void *);
 
-void *exercise_memory_int(void *);
-void *exercise_memory_fp(void *);
+void exercise_memory_int(void *);
+void exercise_memory_fp(void *);
 
-void *exercise_network(void *);
+void exercise_network(void *);
 
-void *exercise_io_single_writes(void *);
-void *exercise_io_individual_writes(void *);
+void exercise_io_single_writes(void *);
+void exercise_io_individual_writes(void *);
 
-void *profile(void *);
+void profile(void *);
 
 void print_core_assignment();
 void change_core_assignment(pid_t, int);

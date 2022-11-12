@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-void *exercise_network(void *arguments){
+void exercise_network(void *arguments){
    int i;
    struct ifaddrs *ifaddr, *ifa;
    struct sockaddr_in *sa;
@@ -41,5 +41,6 @@ void *exercise_network(void *arguments){
 //   }
 
    free(arguments);
+   return;
 }
 

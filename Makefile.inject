@@ -5,8 +5,8 @@ OBJINJ  =$(SRCINJ:.c=.o)
 CC	= icc
 PP	= -g 
 
-CFLAGS	= -O3 -I mxml/ -I papi/include $(PP) 
-LIBS	= -L/home/z01/z01/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread -L/home/z01/z01/adrianj/NodeResourceUsageImpact/papi/lib -lpapi
+CFLAGS	= -O3 -I /home/nx01/nx01/adrianj/mxml/include -I /home/software/papi/5.7.1.0/include $(PP) 
+LIBS	= -L/home/nx01/nx01/adrianj/mxml -lmxml -lpthread -L /home/software/papi/5.7.1.0/lib -lpapi
 
 
 PRGINJ  = inject

@@ -85,6 +85,7 @@ void *profile(void *arguments){
    printf("finished profile\n");
    fflush(stdout);
 
+   pthread_exit(NULL);
 }
 
 void handle_error(int retval){

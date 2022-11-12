@@ -18,7 +18,6 @@
 #define CPU_STRING_SIZE 20
 
 int setup_inject();
-
 int get_key(char *);
 void print_core_assignment(int);
 void print_worker_core_assignment(pid_t,int);

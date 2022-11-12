@@ -5,9 +5,12 @@ OBJ  =$(SRC:.c=.o)
 CC	= cc
 PP	= -g 
 
-CFLAGS	= -O3 -I papi/include -I mxml/ $(PP) 
-LIBS	= -L/home/z19/z19/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread 
-
+#CFLAGS	= -O3 -I papi/include -I mxml/ $(PP) 
+#LIBS	= -L/home/z19/z19/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread 
+#CFLAGS	= -O3 -I mxml/ $(PP) 
+#LIBS	= -L/home/z01/z01/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread 
+CFLAGS  = -O3 -I mxml/ -I papi/include/ $(PP)
+LIBS   = -Lmxml -lmxml -lpthread
 
 main:	writeconfigfile readconfigfile
 

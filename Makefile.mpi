@@ -2,15 +2,15 @@ SRCMPI	= mpi_intercept_library.c inject_config.c hello.c
 
 OBJMPI	=$(SRCMPI:.c=.o)
 
-CC	= cc
+CC	= mpicc
 PP	= -g #-DDEBUG 
 
 #CFLAGS  = -fPIC -O3 -I /home/nx01/nx01/adrianj/mxml/ -I /home/nx01/nx01/adrianj/papi/include $(PP)
 #LIBS    = -L/home/nx01/nx01/adrianj/mxml/lib -lmxml -lpthread
-#CFLAGS  = -O3 -I mxml/ -I papi/include $(PP)
-#LIBS    = -L/lustre/home/z04/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread
-CFLAGS  = -fPIC -O3 -I mxml/ -I papi/include $(PP)
-LIBS    = -L/home/z19/z19/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread
+#CFLAGS  = -fPIC -O3 -I mxml/ -I papi/include $(PP)
+#LIBS    = -L/home/z19/z19/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread
+CFLAGS  = -O3 -fPIC -I mxml/ -I papi/include $(PP)
+LIBS    = -L/home/z04/z04/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread
 
 PRGMPI	= hello
 LIBMPI  = libmpiinject.so

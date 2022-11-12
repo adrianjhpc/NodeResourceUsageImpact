@@ -64,7 +64,8 @@ int main(int argc, char **argv){
   // The order of the division is not important for the calucation below.
   if(conf->inject_process_per_node/conf->processes_per_node != 1){
     ratio = conf->processes_per_node/conf->inject_process_per_node;
-    if((rank)%ratio != 0){
+    // Rebase rank to start at 1 to ensure we correctly include 
+    if((rank+1)%ratio != 0){
       active = 0;
     }
   }

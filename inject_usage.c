@@ -101,19 +101,19 @@ int main(int argc, char **argv){
         ((myprof_t *)conf->tasks[i])->flag = &run_flag;
       }
       if(strcmp(conf->task_types[i], CPU_INT) == 0){
-        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_cpu_int, (void *) conf->tasks[i]);
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, exercise_cpu_int, (void *) conf->tasks[i]);
       }else if(strcmp(conf->task_types[i], CPU_FP) == 0){
-        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_cpu_fp, (void *) conf->tasks[i]);
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, exercise_cpu_fp, (void *) conf->tasks[i]);
       }else if(strcmp(conf->task_types[i], MEM_INT) == 0){
-        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_memory_int, (void *) conf->tasks[i]);
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, exercise_memory_int, (void *) conf->tasks[i]);
       }else if(strcmp(conf->task_types[i], MEM_FP) == 0){
-        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_memory_fp, (void *) conf->tasks[i]);
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, exercise_memory_fp, (void *) conf->tasks[i]);
       }else if(strcmp(conf->task_types[i], IO_SINGLE) == 0){ 
-        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_io_single_writes, (void *) conf->tasks[i]);
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, exercise_io_single_writes, (void *) conf->tasks[i]);
       }else if(strcmp(conf->task_types[i], IO_INDIVIDUAL) == 0){
-        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_io_individual_writes, (void *) conf->tasks[i]);
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, exercise_io_individual_writes, (void *) conf->tasks[i]);
       }else if(strcmp(conf->task_types[i], NETWORK) == 0){
-        ierr = pthread_create(&thread_ids[current_thread_max], NULL, &exercise_network, (void *) conf->tasks[i]);
+        ierr = pthread_create(&thread_ids[current_thread_max], NULL, exercise_network, (void *) conf->tasks[i]);
       }else if(strcmp(conf->task_types[i], PROFILE) == 0 && papi_init == 0){
         retval = PAPI_library_init(PAPI_VER_CURRENT);
         if(retval != PAPI_VER_CURRENT){
@@ -121,7 +121,7 @@ int main(int argc, char **argv){
           ierr = 1;
         }else{
           papi_init = 1;
-          ierr = pthread_create(&thread_ids[current_thread_max], NULL, &profile, (void *) conf->tasks[i]);
+          ierr = pthread_create(&thread_ids[current_thread_max], NULL, profile, (void *) conf->tasks[i]);
         } 
      }
 

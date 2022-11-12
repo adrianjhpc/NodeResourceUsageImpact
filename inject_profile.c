@@ -3,7 +3,7 @@
 
 void handle_error(int);
 
-void profile(void *arguments){
+void *profile(void *arguments){
    int value = 0;
    int i;
    struct profile_arguments *prof_args = arguments;

@@ -1,6 +1,6 @@
 #include "inject_definitions.h"
 
-void exercise_cpu_int(void *arguments){
+void *exercise_cpu_int(void *arguments){
    int value = 0;
    int i;
    struct cpu_arguments *cpu_args = arguments;
@@ -35,7 +35,7 @@ void exercise_cpu_int(void *arguments){
    fflush(stdout);
 }
 
-void exercise_cpu_fp(void *arguments){
+void *exercise_cpu_fp(void *arguments){
    double value = 0.0;
    int i;
    struct cpu_arguments *cpu_args = arguments;

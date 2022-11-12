@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-void exercise_network(void *arguments){
+void *exercise_network(void *arguments){
    int i;
    struct ifaddrs *ifaddr, *ifa;
    struct sockaddr_in *sa;
@@ -20,7 +20,7 @@ void exercise_network(void *arguments){
    if(getifaddrs(&ifaddr) == -1) {
     printf("Error looking up network interfaces\n");
     fflush(stdout);
-    return;
+    pthread_exit(NULL);
   }
 
   for(ifa=ifaddr; ifa!=NULL; ifa=ifa->ifa_next){
@@ -41,6 +41,5 @@ void exercise_network(void *arguments){
 //   }
 
    free(arguments);
-   return;
 }
 

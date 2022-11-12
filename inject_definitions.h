@@ -7,6 +7,7 @@
 #include <mxml.h>
 #include <papi.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #define MAX_THREADS 100
 

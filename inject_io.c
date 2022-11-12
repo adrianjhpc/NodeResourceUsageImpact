@@ -1,6 +1,6 @@
 #include "inject_definitions.h"
 
-void exercise_io_single_writes(void *arguments){
+void *exercise_io_single_writes(void *arguments){
    int i;
    long length;
    double *data;
@@ -56,7 +56,7 @@ void exercise_io_single_writes(void *arguments){
    fflush(stdout);
 }
 
-void exercise_io_individual_writes(void *arguments){
+void *exercise_io_individual_writes(void *arguments){
    int i;
    long length;
    double *data;

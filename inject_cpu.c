@@ -1,6 +1,7 @@
 #include "inject_definitions.h"
 
 void *exercise_cpu_int(void *arguments){
+   int total = 0;
    int value = 0;
    int i;
    struct cpu_arguments *cpu_args = arguments;
@@ -22,6 +23,7 @@ void *exercise_cpu_int(void *arguments){
      gettimeofday(&tv1, NULL);
      comp_secs = comp_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
+     total = total + value/cpu_args->size;
      gettimeofday(&tv1, NULL);
      usleep(cpu_args->freq);
      gettimeofday(&tv1, NULL);
@@ -36,6 +38,7 @@ void *exercise_cpu_int(void *arguments){
 }
 
 void *exercise_cpu_fp(void *arguments){
+   double total = 0.0;
    double value = 0.0;
    int i;
    struct cpu_arguments *cpu_args = arguments;
@@ -57,6 +60,7 @@ void *exercise_cpu_fp(void *arguments){
      gettimeofday(&tv2, NULL);
      comp_secs = comp_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
+     total = total + value/cpu_args->size;
      gettimeofday(&tv1, NULL);
      usleep(cpu_args->freq);
      gettimeofday(&tv2, NULL);

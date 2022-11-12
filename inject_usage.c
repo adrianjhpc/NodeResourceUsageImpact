@@ -37,6 +37,8 @@ int main(int argc, char **argv){
     return 1;
   }
   rank = atoi(argv[1]);
+  // File to exchange PID is no longer needed.
+  /*
   sprintf(filename,"%d_pid_number.txt",rank);
   file_handle = fopen(filename, "w");
   if (file_handle == NULL) {
@@ -46,7 +48,7 @@ int main(int argc, char **argv){
     fprintf(file_handle,"%d",getpid());
     fclose(file_handle);
   }
-
+*/
   config_filename = argv[2];
 
 // This should not strictly be necessary because it should be done in the MPI Init call that starts this task
@@ -60,9 +62,13 @@ int main(int argc, char **argv){
   conf = get_configuration(config_filename);
   
   // Work out if this process should run anything and where it should run stuff (i.e. what core, what hyperthread, etc...)
-  // If we are running less inject processes per node than mpi processes per node
-  // The order of the division is not important for the calucation below.
+  // if we are running less inject processes per node than mpi processes per node.
+  // The order of the division is not important for the calculation below.
   if(conf->inject_process_per_node/conf->processes_per_node != 1){
+    // If we reach here then the number of inject processes per node != the number of application processes per node
+#ifdef DEBUG
+    printf("Inject process %ld: rank %d More or less inject processes (%d) than application processes (%d)\n",getpid(),rank,conf->inject_process_per_node,conf->processes_per_node);
+#endif
     ratio = conf->processes_per_node/conf->inject_process_per_node;
     // Rebase rank to start at 1 to ensure we correctly include 
     if((rank+1)%ratio != 0){

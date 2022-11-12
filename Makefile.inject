@@ -2,14 +2,15 @@ SRCINJ  = core_management.c inject_usage.c inject_memory.c inject_cpu.c inject_i
 
 OBJINJ  =$(SRCINJ:.c=.o)
 
-CC	= icc
-PP	= -g 
+CC	= cc
+PP	= -g -DDEBUG 
 
 #CFLAGS	= -O3 -I /home/nx01/nx01/adrianj/mxml/include -I /home/software/papi/5.7.1.0/include $(PP) 
 #LIBS	= -L/home/nx01/nx01/adrianj/mxml -lmxml -lpthread -L /home/software/papi/5.7.1.0/lib -lpapi
-CFLAGS	= -O3 -I mxml/ -I papi/include $(PP) 
-LIBS	= -L/lustre/home/z04/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread -L/lustre/home/z04/adrianj/NodeResourceUsageImpact/papi/lib -lpapi
-
+#CFLAGS	= -O3 -I mxml/ -I papi/include $(PP) 
+#LIBS	= -L/lustre/home/z04/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread -L/lustre/home/z04/adrianj/NodeResourceUsageImpact/papi/lib -lpapi
+CFLAGS = -O3 -I mxml/ -I papi/include $(PP)
+LIBS	= -L/home/z19/z19/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread -L/home/z19/z19/adrianj/NodeResourceUsageImpact/papi/lib -lpapi
 
 PRGINJ  = inject
 

@@ -1,5 +1,8 @@
 *.o
+*.so
 inject
 hello
 writeconfigfile
 configuration.xml
+mxml/
+papi/

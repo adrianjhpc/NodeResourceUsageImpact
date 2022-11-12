@@ -2,11 +2,11 @@ SRC  = readconfigfile.c writeconfigfile.c
 
 OBJ  =$(SRC:.c=.o)
 
-CC	= icc
+CC	= cc
 PP	= -g 
 
-CFLAGS	= -O3 -I mxml/ $(PP) 
-LIBS	= -L/home/z01/z01/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread 
+CFLAGS	= -O3 -I papi/include -I mxml/ $(PP) 
+LIBS	= -L/home/z19/z19/adrianj/NodeResourceUsageImpact/mxml -lmxml -lpthread 
 
 
 main:	writeconfigfile readconfigfile

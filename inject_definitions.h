@@ -4,10 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/sysinfo.h>
+#include <sys/time.h>
 #include <mxml.h>
 #include <papi.h>
 #include <sys/time.h>
 #include <pthread.h>
+
 
 #define MAX_THREADS 100
 

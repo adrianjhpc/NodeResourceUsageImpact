@@ -159,7 +159,7 @@ int setup_inject(){
 	if(child_pid == -1){
 		printf("Problem getting child pid through file: %s\n",filename);
 	}else{
-		printf("Process ID = %d Child ID = %d\n", process_id, child_id);
+		printf("Process ID = %d Child ID = %d\n", process_id, child_pid);
 		process_id = child_pid;
 	}
         // Clean up initialisation data

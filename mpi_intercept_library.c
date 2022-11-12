@@ -139,29 +139,6 @@ int setup_inject(){
 		printf("Error spawning process\n");
 	}
 
-	child_pid = -1;
-	cont = 1;
-	i = 0;
-	while(cont && i < 10){
-		sprintf(filename, "%d_pid_number.txt", global_rank);
-
-		file_handle = fopen(filename, "r");
-		if(file_handle != NULL){
-			fscanf (file_handle, "%d", &child_pid);
-			fclose(file_handle);
-			remove(filename);
-			cont = 0;
-		}else{
-			i++;
-			sleep(1);
-		}
-	}
-	if(child_pid == -1){
-		printf("Problem getting child pid through file: %s\n",filename);
-	}else{
-		printf("Process ID = %d Child ID = %d\n", process_id, child_pid);
-		process_id = child_pid;
-	}
         // Clean up initialisation data
         posix_spawn_file_actions_destroy(&action);
 

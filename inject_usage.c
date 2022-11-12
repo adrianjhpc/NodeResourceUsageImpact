@@ -37,15 +37,6 @@ int main(int argc, char **argv){
     return 1;
   }
   rank = atoi(argv[1]);
-  sprintf(filename,"%d_pid_number.txt",rank);
-  file_handle = fopen(filename, "w");
-  if (file_handle == NULL) {
-    printf("Cannot open file to exchange pid from child inject process to parent MPI process. Exiting\n");
-    return 1;
-  }else{
-    fprintf(file_handle,"%d",getpid());
-    fclose(file_handle);
-  }
   config_filename = argv[2];
 
 // This should not strictly be necessary because it should be done in the MPI Init call that starts this task
@@ -64,7 +55,7 @@ int main(int argc, char **argv){
   if(conf->inject_process_per_node/conf->processes_per_node != 1){
     // If we reach here then the number of inject processes per node != the number of application processes per node
 #ifdef DEBUG
-    printf("Inject process %d: rank %d More or less inject processes (%d) than application processes (%d)\n",getpid(),rank,conf->inject_process_per_node,conf->processes_per_node);
+    printf("Inject process %d: rank %d More or less inject processes (%d) than application processes defined in the config file (%d)\n",getpid(),rank,conf->inject_process_per_node,conf->processes_per_node);
 #endif
     ratio = conf->processes_per_node/conf->inject_process_per_node;
     // Rebase rank to start at 1 to ensure we correctly include 

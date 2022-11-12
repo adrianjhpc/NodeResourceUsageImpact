@@ -52,7 +52,7 @@ void *exercise_io_single_writes(void *arguments){
    free(data);
    free(arguments);
    free(filename);
-   printf("finished exercise_io_single_write: i/o ran for: %lf seconds, sleep ran for: %lf seconds\n", io_secs, sleep_secs);
+  printf("finished exercise_io_single_write: i/o ran for: %lf seconds, sleep ran for: %lf seconds, so was active for %lf%% of the time\n", io_secs, sleep_secs, 100*(io_secs/(io_secs + sleep_secs)));
    fflush(stdout);
 }
 
@@ -110,7 +110,7 @@ void *exercise_io_individual_writes(void *arguments){
    free(data);
    free(arguments);
    free(filename);
-   printf("finished exercise_io_individual_writes: i/o ran for: %lf seconds, sleep ran for: %lf seconds\n", io_secs, sleep_secs);
+   printf("finished exercise_io_individual_writes: i/o ran for: %lf seconds, sleep ran for: %lf seconds, so was active for %lf%% of the time\n", io_secs, sleep_secs, 100*(io_secs/(io_secs + sleep_secs)));
    fflush(stdout);
 
 }

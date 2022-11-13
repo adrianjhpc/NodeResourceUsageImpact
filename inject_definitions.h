@@ -27,6 +27,7 @@
 #define NO_INT 0
 #define ERROR_INT -1
 #define ERROR_STR "error"
+#define PERCENTAGE_TARGET_TOLERANCE 2
 
 typedef struct cpu_arguments {
   int size;

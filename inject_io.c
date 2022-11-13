@@ -5,6 +5,9 @@ void *exercise_io_single_writes(void *arguments){
    long length;
    double *data;
    FILE * file_handle;
+   int adapting = 0;
+   double running_total;
+   int calculated_percentage;
    struct io_arguments *io_args = arguments;
    double io_secs, sleep_secs;
    struct timeval  tv1, tv2;
@@ -15,6 +18,12 @@ void *exercise_io_single_writes(void *arguments){
    sleep_secs = 0.0;
 
    change_core_assignment(0,io_args->core);
+
+   // If the user has specified a percentage of runtime for the task start the processes 
+   // of allowing the runtime load to be variable to achieve that request.
+   if(io_args->percent > 0 && io_args->percent <= 100){
+     adapting = 1;
+   }
 
    length = io_args->size;
    length = length * sizeof(double);
@@ -47,6 +56,18 @@ void *exercise_io_single_writes(void *arguments){
      gettimeofday(&tv2, NULL);
      sleep_secs = sleep_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
+     // If we are adapting load to come close to the percentage runtime of load the user specified then just the sleep time here
+     if(adapting){
+       running_total = io_secs +  sleep_secs;
+       calculated_percentage = 100*(io_secs/running_total);
+       if(abs(calculated_percentage - io_args->percent) > PERCENTAGE_TARGET_TOLERANCE){
+	 if(calculated_percentage > io_args->percent){
+	   io_args->freq = io_args->freq * 1.5;
+	 }else{
+	   io_args->freq = io_args->freq / 1.3;
+	 }
+       }
+     }
    }
 
    free(data);
@@ -64,6 +85,9 @@ void *exercise_io_individual_writes(void *arguments){
    long length;
    double *data;
    FILE * file_handle;
+   int adapting = 0;
+   double running_total;
+   int calculated_percentage;
    struct io_arguments *io_args = arguments;
    double io_secs, sleep_secs;
    struct timeval  tv1, tv2;
@@ -74,6 +98,12 @@ void *exercise_io_individual_writes(void *arguments){
    sleep_secs = 0.0;
 
    change_core_assignment(0,io_args->core);
+
+   // If the user has specified a percentage of runtime for the task start the processes 
+   // of allowing the runtime load to be variable to achieve that request.
+   if(io_args->percent > 0 && io_args->percent <= 100){
+     adapting = 1;
+   }
 
    length = io_args->size;
    length = length * sizeof(double);
@@ -108,6 +138,18 @@ void *exercise_io_individual_writes(void *arguments){
      gettimeofday(&tv2, NULL);
      sleep_secs = sleep_secs + (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
          (double) (tv2.tv_sec - tv1.tv_sec);
+     // If we are adapting load to come close to the percentage runtime of load the user specified then just the sleep time here
+     if(adapting){
+       running_total = io_secs +  sleep_secs;
+       calculated_percentage = 100*(io_secs/running_total);
+       if(abs(calculated_percentage - io_args->percent) > PERCENTAGE_TARGET_TOLERANCE){
+	 if(calculated_percentage > io_args->percent){
+	   io_args->freq = io_args->freq * 1.5;
+	 }else{
+	   io_args->freq = io_args->freq / 1.3;
+	 }
+       }
+     }
    }
 
    free(data);

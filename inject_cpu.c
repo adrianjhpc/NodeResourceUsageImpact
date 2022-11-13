@@ -21,7 +21,7 @@ void *exercise_cpu_int(void *arguments){
    // If the user has specified a percentage of runtime for the task start the processes 
    // of allowing the runtime load to be variable to achieve that request.
    if(cpu_args->percent > 0 && cpu_args->percent <= 100){
-      adapting = 1;
+     adapting = 1;
    }
 
    while(*(cpu_args->flag)){
@@ -41,19 +41,18 @@ void *exercise_cpu_int(void *arguments){
          (double) (tv2.tv_sec - tv1.tv_sec);
      // If we are adapting load to come close to the percentage runtime of load the user specified then just the sleep time here
      if(adapting){
-	running_total = comp_secs +  sleep_secs;
-	calculated_percentage = 100*(comp_secs/running_total);
-	if(abs(calculated_percentage - cpu_args->percent) > 5){
-	  if(calculated_percentage > cpu_args->percent){
-	     cpu_args->freq = cpu_args->freq * 1.5;
-	  }else{
-             cpu_args->freq = cpu_args->freq / 1.3;
-	  }
-	}
-	printf("Adapting %d %d %d\n", calculated_percentage, cpu_args->percent, cpu_args->freq);
+       running_total = comp_secs +  sleep_secs;
+       calculated_percentage = 100*(comp_secs/running_total);
+       if(abs(calculated_percentage - cpu_args->percent) > PERCENTAGE_TARGET_TOLERANCE){
+	 if(calculated_percentage > cpu_args->percent){
+	   cpu_args->freq = cpu_args->freq * 1.5;
+	 }else{
+	   cpu_args->freq = cpu_args->freq / 1.3;
+	 }
+       }
      }
    }
-
+   
    free(arguments);
 // Value is printed out here to stop the compiler removing the compute loop above when optimisation is turned on.
    printf("finished exercise_cpu_int: compute ran for: %lf seconds, sleep ran for: %lf seconds, so was active for %lf%% of the time (res: %d)\n", comp_secs, sleep_secs, 100*(comp_secs/(comp_secs + sleep_secs)), value);
@@ -80,10 +79,13 @@ void *exercise_cpu_fp(void *arguments){
    printf("exercise_cpu_fp running on core %d\n",sched_getcpu());
    fflush(stdout);
 
+   printf("exercise_cpu_fp percent goal %d\n", cpu_args->percent);
+   fflush(stdout);
+
    // If the user has specified a percentage of runtime for the task start the processes
    // of allowing the runtime load to be variable to achieve that request.
    if(cpu_args->percent > 0 && cpu_args->percent <= 100){
-      adapting = 1;
+     adapting = 1;
    }
 
    while(*(cpu_args->flag)){
@@ -103,16 +105,15 @@ void *exercise_cpu_fp(void *arguments){
          (double) (tv2.tv_sec - tv1.tv_sec);
      // If we are adapting load to come close to the percentage runtime of load the user specified then just the sleep time here
      if(adapting){
-        running_total = comp_secs +  sleep_secs;
-        calculated_percentage = 100*(comp_secs/running_total);
-        if(abs(calculated_percentage - cpu_args->percent) > 5){
-          if(calculated_percentage > cpu_args->percent){
-             cpu_args->freq = cpu_args->freq * 1.5;
-          }else{
-             cpu_args->freq = cpu_args->freq / 1.3;
-          }
-        }
-        printf("Adapting %d %d %d\n", calculated_percentage, cpu_args->percent, cpu_args->freq);
+       running_total = comp_secs +  sleep_secs;
+       calculated_percentage = 100*(comp_secs/running_total);
+       if(abs(calculated_percentage - cpu_args->percent) > PERCENTAGE_TARGET_TOLERANCE){
+	 if(calculated_percentage > cpu_args->percent){
+	   cpu_args->freq = cpu_args->freq * 1.5;
+	 }else{
+	   cpu_args->freq = cpu_args->freq / 1.3;
+	 }
+       }
      }
    }
    free(arguments);

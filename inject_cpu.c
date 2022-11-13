@@ -14,7 +14,7 @@ void *exercise_cpu_int(void *arguments){
    comp_secs = 0.0;
    sleep_secs = 0.0;
 
-   change_core_assignment(0,cpu_args->core);
+   nrui_change_core_assignment(0,cpu_args->core);
    printf("exercise_cpu_int running on core %d\n",sched_getcpu());
    fflush(stdout);
 
@@ -75,7 +75,7 @@ void *exercise_cpu_fp(void *arguments){
    comp_secs = 0.0;
    sleep_secs = 0.0; 
 
-   change_core_assignment(0,cpu_args->core);
+   nrui_change_core_assignment(0,cpu_args->core);
    printf("exercise_cpu_fp running on core %d\n",sched_getcpu());
    fflush(stdout);
 

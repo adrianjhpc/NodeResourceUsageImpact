@@ -14,7 +14,7 @@ void *exercise_memory_int(void *arguments){
    mem_secs = 0.0;
    sleep_secs = 0.0;
 
-   change_core_assignment(0,mem_args->core);
+   nrui_change_core_assignment(0,mem_args->core);
    
    data = (int *)malloc(sizeof(int)*mem_args->size);
 
@@ -78,7 +78,7 @@ void *exercise_memory_fp(void *arguments){
    mem_secs = 0.0;
    sleep_secs = 0.0;
 
-   change_core_assignment(0,mem_args->core);
+   nrui_change_core_assignment(0,mem_args->core);
 
    data = (double *)malloc(sizeof(double)*mem_args->size);
    printf("exercise_memory_fp running on core %d\n",sched_getcpu());

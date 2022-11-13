@@ -17,7 +17,7 @@ void *exercise_io_single_writes(void *arguments){
    io_secs = 0.0;
    sleep_secs = 0.0;
 
-   change_core_assignment(0,io_args->core);
+   nrui_change_core_assignment(0,io_args->core);
 
    // If the user has specified a percentage of runtime for the task start the processes 
    // of allowing the runtime load to be variable to achieve that request.
@@ -97,7 +97,7 @@ void *exercise_io_individual_writes(void *arguments){
    io_secs = 0.0;
    sleep_secs = 0.0;
 
-   change_core_assignment(0,io_args->core);
+   nrui_change_core_assignment(0,io_args->core);
 
    // If the user has specified a percentage of runtime for the task start the processes 
    // of allowing the runtime load to be variable to achieve that request.

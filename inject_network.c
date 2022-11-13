@@ -17,7 +17,7 @@ void *exercise_network(void *arguments){
    int calculated_percentage;
    struct net_arguments *net_args = arguments;
 
-   change_core_assignment(0,net_args->core);
+   nrui_change_core_assignment(0,net_args->core);
 
    // If the user has specified a percentage of runtime for the task start the processes 
    // of allowing the runtime load to be variable to achieve that request.

@@ -109,7 +109,7 @@ int setup_inject(){
 	MPI_Comm_rank(MPI_COMM_WORLD, &global_rank);
 
 #ifdef DEBUG
-	print_core_assignment(global_rank);
+	nrui_print_core_assignment(global_rank);
 #endif
 
 	sprintf(stdoutname, "inject_log_%d.out", global_rank);
@@ -179,14 +179,14 @@ int MPI_Finalize(){
 // regardless of processor type given we aren't worried about thread/process migration.
 // Test on Intel systems and see if we can get rid of the architecture specificity 
 // of the code.
-unsigned long get_processor_and_core(int *chip, int *core){
+unsigned long nrui_get_processor_and_core(int *chip, int *core){
 	return syscall(SYS_getcpu, core, chip, NULL);
 }
 // TODO: Add in AMD function
 #else
 // If we're not on an ARM processor assume we're on an intel processor and use the 
 // rdtscp instruction. 
-unsigned long get_processor_and_core(int *chip, int *core)
+unsigned long nrui_get_processor_and_core(int *chip, int *core)
 {
 	unsigned long a,d,c;
 	__asm__ volatile("rdtscp" : "=a" (a), "=d" (d), "=c" (c));
@@ -205,7 +205,7 @@ unsigned long get_processor_and_core(int *chip, int *core)
 // amounts (i.e the name of nodes where they different by a
 // number of set of numbers and letters, for instance
 // login01,login02..., or cn01q94,cn02q43, etc...)
-int name_to_colour(const char *name){
+int nrui_name_to_colour(const char *name){
 	int res;
 	int multiplier = 131;
 	const char *p;
@@ -234,7 +234,7 @@ int name_to_colour(const char *name){
 }
 
 
-int get_key(char *name){
+int nrui_get_key(char *name){
 
 	int len;
 	int lpar_key;
@@ -244,7 +244,7 @@ int get_key(char *name){
 
 	MPI_Get_processor_name(name, &len);
 
-	get_processor_and_core(&cpu,&core);
+	nrui_get_processor_and_core(&cpu,&core);
 
 	snprintf(cpu_string, CPU_STRING_SIZE*sizeof(cpu_string[0]), "%d", cpu);
 
@@ -256,7 +256,7 @@ int get_key(char *name){
 		exit(1);
 	}
 
-	lpar_key = name_to_colour(name);
+	lpar_key = nrui_name_to_colour(name);
 
 	lpar_key = cpu + lpar_key;
 
@@ -264,7 +264,7 @@ int get_key(char *name){
 
 }
 
-void print_core_assignment(int rank){
+void nrui_print_core_assignment(int rank){
 
 	int i, flag;
 	cpu_set_t coremask;
@@ -284,7 +284,7 @@ void print_core_assignment(int rank){
 
 }
 
-void print_worker_core_assignment(pid_t pid, int rank){
+void nrui_print_worker_core_assignment(pid_t pid, int rank){
 
 	int i, flag;
 	cpu_set_t coremask;

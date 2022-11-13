@@ -67,7 +67,7 @@ int main(int argc, char **argv){
   if(active){
 
     // Work out where this process should run stuff (i.e. what core, what hyperthread, etc...)
-    placement = calculate_placement(rank, conf);
+    placement = nrui_calculate_placement(rank, conf);
     //placement = rank - (conf->processes_per_node*(rank/conf->processes_per_node))+(conf->use_hyperthreads*((conf->cores_per_node*conf->hyperthreads)-conf->cores_per_node));
     // Register the signal handler to allow child threads to be notified to stop gracefully.
     if(signal(SIGINT, sig_handler) == SIG_ERR){
@@ -76,9 +76,9 @@ int main(int argc, char **argv){
       return 1;
     }
 
-    print_core_assignment();
-    change_core_assignment(getpid(),placement);
-    print_core_assignment();
+    nrui_print_core_assignment();
+    nrui_change_core_assignment(getpid(),placement);
+    nrui_print_core_assignment();
 
 
     for(i=0;i<conf->task_count;i++){

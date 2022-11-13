@@ -11,7 +11,7 @@ void *profile(void *arguments){
    long_long values[1];
    long long tot_inst = 0;
 
-   change_core_assignment(0,prof_args->core);
+   nrui_change_core_assignment(0,prof_args->core);
    printf("profile running on core %d\n",sched_getcpu());
    fflush(stdout);
 

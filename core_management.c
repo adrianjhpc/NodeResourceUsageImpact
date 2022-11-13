@@ -1,7 +1,7 @@
 #include "inject_definitions.h"
 
 /* Borrowed from util-linux-2.13-pre7/schedutils/taskset.c */
-static char *cpuset_to_cstr(cpu_set_t *mask, char *str){
+static char *nrui_cpuset_to_cstr(cpu_set_t *mask, char *str){
   char *ptr = str;
   int i, j, entry_made = 0;
   for (i = 0; i < CPU_SETSIZE; i++) {
@@ -29,17 +29,17 @@ static char *cpuset_to_cstr(cpu_set_t *mask, char *str){
   return(str);
 }
 
-void print_core_assignment(){
+void nrui_print_core_assignment(){
   cpu_set_t coremask;
   char clbuf[7 * CPU_SETSIZE];
 
   sched_getaffinity(0, sizeof(coremask), &coremask);
-  cpuset_to_cstr(&coremask, clbuf);
+  nrui_cpuset_to_cstr(&coremask, clbuf);
   printf("Inject task running on core(s) %s\n", clbuf);
   return;
 }
 
-void change_core_assignment(pid_t process_id, int core){  
+void nrui_change_core_assignment(pid_t process_id, int core){  
   int ierr;
   cpu_set_t coremask;
   int max_cores;
@@ -70,7 +70,7 @@ void change_core_assignment(pid_t process_id, int core){
  * based on the configuration of the current inject task. As  x86 and Arm number their cores differently
  * this needs to be done differently depending on the hardware being used.
  */
-int calculate_placement(int rank, configuration_t *conf){
+int nrui_calculate_placement(int rank, configuration_t *conf){
 
   int placement, offset;
 
